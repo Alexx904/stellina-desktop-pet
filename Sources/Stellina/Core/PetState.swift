@@ -6,6 +6,8 @@ public enum PetState: String, CaseIterable, Codable {
     case walkRight = "walkRight"
     case falling = "falling"
     case dragged = "dragged"
+    case petted = "petted"
+    case sleeping = "sleeping"
 
     public var displayName: String {
         switch self {
@@ -14,6 +16,8 @@ public enum PetState: String, CaseIterable, Codable {
         case .walkRight: return "Cammina a Destra"
         case .falling: return "In Caduta"
         case .dragged: return "Trascinato"
+        case .petted: return "Coccolato (Pat-Pat)"
+        case .sleeping: return "Addormentato (Sleep)"
         }
     }
 }

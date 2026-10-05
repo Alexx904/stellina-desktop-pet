@@ -1,0 +1,20 @@
+# Swift & Xcode
+.build/
+.swiftpm/
+*.xcodeproj
+*.xcworkspace
+
+# Build artifacts
+build/temp/
+build/*.spec
+build/Stellina-Windows/
+build/*.zip
+build/Stellina.app
+
+# Python
+__pycache__/
+*.py[cod]
+
+# OS files
+.DS_Store
+Thumbs.db

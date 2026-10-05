@@ -53,6 +53,18 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
+        behavior.onLanded = { [weak self] in
+            self?.petView?.triggerSquishBounce()
+        }
+
+        behavior.onPetPatTriggered = { [weak self] in
+            self?.petView?.triggerPetPatEffect()
+        }
+
+        behavior.onWakeUpTriggered = { [weak self] in
+            self?.petView?.triggerHop()
+        }
+
         // 5. Ascolta modifiche delle dimensioni dalle impostazioni
         settings.$windowSize
             .receive(on: RunLoop.main)

@@ -13,6 +13,13 @@ public final class PetSettings: ObservableObject {
         static let customWalkLeftPaths = "stellina_custom_walk_left"
         static let customWalkRightPaths = "stellina_custom_walk_right"
         static let customFallPath = "stellina_custom_fall"
+
+        // Audio & Interazioni
+        static let soundEnabled = "stellina_sound_enabled"
+        static let soundVolume = "stellina_sound_volume"
+        static let petPatEnabled = "stellina_petpat_enabled"
+        static let sleepEnabled = "stellina_sleep_enabled"
+        static let sleepIdleSeconds = "stellina_sleep_idle_seconds"
     }
 
     // Parametri Fisici e Visivi
@@ -30,6 +37,27 @@ public final class PetSettings: ObservableObject {
 
     @Published public var animSpeedTicks: Int {
         didSet { UserDefaults.standard.set(animSpeedTicks, forKey: Keys.animSpeedTicks) }
+    }
+
+    // Audio & Interazioni
+    @Published public var soundEnabled: Bool {
+        didSet { UserDefaults.standard.set(soundEnabled, forKey: Keys.soundEnabled) }
+    }
+
+    @Published public var soundVolume: Double {
+        didSet { UserDefaults.standard.set(soundVolume, forKey: Keys.soundVolume) }
+    }
+
+    @Published public var petPatEnabled: Bool {
+        didSet { UserDefaults.standard.set(petPatEnabled, forKey: Keys.petPatEnabled) }
+    }
+
+    @Published public var sleepEnabled: Bool {
+        didSet { UserDefaults.standard.set(sleepEnabled, forKey: Keys.sleepEnabled) }
+    }
+
+    @Published public var sleepIdleSeconds: Double {
+        didSet { UserDefaults.standard.set(sleepIdleSeconds, forKey: Keys.sleepIdleSeconds) }
     }
 
     // Percorsi Sprite Personalizzati
@@ -79,6 +107,14 @@ public final class PetSettings: ObservableObject {
         let savedAnimTicks = defaults.integer(forKey: Keys.animSpeedTicks)
         self.animSpeedTicks = savedAnimTicks > 0 ? savedAnimTicks : 5
 
+        self.soundEnabled = defaults.object(forKey: Keys.soundEnabled) != nil ? defaults.bool(forKey: Keys.soundEnabled) : true
+        let savedVol = defaults.double(forKey: Keys.soundVolume)
+        self.soundVolume = savedVol > 0 ? savedVol : 0.8
+        self.petPatEnabled = defaults.object(forKey: Keys.petPatEnabled) != nil ? defaults.bool(forKey: Keys.petPatEnabled) : true
+        self.sleepEnabled = defaults.object(forKey: Keys.sleepEnabled) != nil ? defaults.bool(forKey: Keys.sleepEnabled) : true
+        let savedSleepIdle = defaults.double(forKey: Keys.sleepIdleSeconds)
+        self.sleepIdleSeconds = savedSleepIdle > 0 ? savedSleepIdle : 120.0
+
         self.customIdlePath = defaults.string(forKey: Keys.customIdlePath)
         self.customWalkLeftPaths = defaults.stringArray(forKey: Keys.customWalkLeftPaths) ?? []
         self.customWalkRightPaths = defaults.stringArray(forKey: Keys.customWalkRightPaths) ?? []
@@ -91,6 +127,12 @@ public final class PetSettings: ObservableObject {
         gravity = 2.0
         animSpeedTicks = 5
 
+        soundEnabled = true
+        soundVolume = 0.8
+        petPatEnabled = true
+        sleepEnabled = true
+        sleepIdleSeconds = 120.0
+
         customIdlePath = nil
         customWalkLeftPaths = []
         customWalkRightPaths = []
@@ -100,6 +142,11 @@ public final class PetSettings: ObservableObject {
         UserDefaults.standard.removeObject(forKey: Keys.walkSpeed)
         UserDefaults.standard.removeObject(forKey: Keys.gravity)
         UserDefaults.standard.removeObject(forKey: Keys.animSpeedTicks)
+        UserDefaults.standard.removeObject(forKey: Keys.soundEnabled)
+        UserDefaults.standard.removeObject(forKey: Keys.soundVolume)
+        UserDefaults.standard.removeObject(forKey: Keys.petPatEnabled)
+        UserDefaults.standard.removeObject(forKey: Keys.sleepEnabled)
+        UserDefaults.standard.removeObject(forKey: Keys.sleepIdleSeconds)
         UserDefaults.standard.removeObject(forKey: Keys.customIdlePath)
         UserDefaults.standard.removeObject(forKey: Keys.customWalkLeftPaths)
         UserDefaults.standard.removeObject(forKey: Keys.customWalkRightPaths)

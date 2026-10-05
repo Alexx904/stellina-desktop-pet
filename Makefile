@@ -1,4 +1,4 @@
-.PHONY: all build run clean package
+.PHONY: all build run clean package package-windows run-windows
 
 all: package
 
@@ -10,6 +10,12 @@ run:
 
 package:
 	bash scripts/build_app.sh
+
+package-windows:
+	powershell -ExecutionPolicy Bypass -File scripts/build_windows.ps1
+
+run-windows:
+	python Sources/Windows/main.py
 
 clean:
 	rm -rf .build build

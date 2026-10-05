@@ -15,6 +15,11 @@ public struct SettingsView: View {
                     Label("Fisica & Movimento", systemImage: "slider.horizontal.3")
                 }
 
+            InteractionsSettingsView()
+                .tabItem {
+                    Label("Interazioni & Audio", systemImage: "heart.circle")
+                }
+
             aboutTab
                 .tabItem {
                     Label("Informazioni", systemImage: "info.circle")

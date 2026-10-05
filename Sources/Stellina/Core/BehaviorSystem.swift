@@ -20,18 +20,51 @@ public final class BehaviorSystem {
                 currentState = .dragged
                 velocityY = 0.0
                 animIndex = 0
+                resetInactivity()
+                SoundManager.shared.play(.dragStart)
             }
         }
     }
 
     private var walkTicksRemaining: Int = 0
+    private var pettedTicksRemaining: Int = 0
+    private var inactivityTicks: Int = 0
     private var animIndex: Int = 0
     private var animTickCounter: Int = 0
 
     public var onFrameUpdate: ((NSImage?, CGPoint) -> Void)?
+    public var onLanded: (() -> Void)?
+    public var onPetPatTriggered: (() -> Void)?
+    public var onWakeUpTriggered: (() -> Void)?
 
     private init() {
         resetToInitialPosition()
+    }
+
+    public func resetInactivity() {
+        inactivityTicks = 0
+    }
+
+    public func pet() {
+        guard settings.petPatEnabled else { return }
+        resetInactivity()
+        if currentState == .sleeping {
+            wakeUp()
+            return
+        }
+        currentState = .petted
+        pettedTicksRemaining = 50 // ~1.5 secondi
+        SoundManager.shared.play(.patPat)
+        onPetPatTriggered?()
+    }
+
+    public func wakeUp() {
+        guard currentState == .sleeping else { return }
+        currentState = .idle
+        resetInactivity()
+        walkTicksRemaining = 60
+        SoundManager.shared.play(.wakeUp)
+        onWakeUpTriggered?()
     }
 
     public func resetToInitialPosition() {
@@ -42,6 +75,8 @@ public final class BehaviorSystem {
         velocityY = 0.0
         currentState = .falling
         walkTicksRemaining = 0
+        pettedTicksRemaining = 0
+        inactivityTicks = 0
         animIndex = 0
         animTickCounter = 0
     }
@@ -50,10 +85,12 @@ public final class BehaviorSystem {
         posX = x
         posY = y
         velocityY = 0.0
+        resetInactivity()
     }
 
     public func endDrag() {
         isDragging = false
+        resetInactivity()
         if posY > physics.groundY {
             currentState = .falling
         } else {
@@ -69,6 +106,7 @@ public final class BehaviorSystem {
         if isDragging {
             // Durante il drag la posizione viene gestita direttamente dagli eventi mouse
             currentState = .dragged
+            resetInactivity()
         } else {
             // Gestione gravitazionale
             if posY > physics.groundY {
@@ -78,40 +116,62 @@ public final class BehaviorSystem {
                     self.currentState = .idle
                     self.walkTicksRemaining = Int.random(in: 60...150)
                     self.animIndex = 0
+                    SoundManager.shared.play(.land)
+                    self.onLanded?()
                 }
             } else {
                 posY = physics.groundY
                 velocityY = 0.0
 
-                // Movimento orizzontale a terra
-                if walkTicksRemaining > 0 {
-                    walkTicksRemaining -= 1
-                    let speed = settings.walkSpeed
-                    if currentState == .walkRight {
-                        posX += speed
-                    } else if currentState == .walkLeft {
-                        posX -= speed
+                if currentState == .petted {
+                    // Stato coccolato
+                    pettedTicksRemaining -= 1
+                    if pettedTicksRemaining <= 0 {
+                        currentState = .idle
+                        walkTicksRemaining = Int.random(in: 50...100)
+                    }
+                } else if currentState == .sleeping {
+                    // Se sta dormendo non cammina
+                } else {
+                    // Controllo inattività per addormentarsi
+                    inactivityTicks += 1
+                    let sleepThresholdTicks = Int(settings.sleepIdleSeconds * 30)
+                    if settings.sleepEnabled && inactivityTicks >= sleepThresholdTicks {
+                        currentState = .sleeping
                     }
 
-                    // Rimbalzo sui bordi schermo
-                    physics.handleHorizontalBounds(
-                        posX: &posX,
-                        windowWidth: size,
-                        currentState: &currentState
-                    )
-                } else {
-                    // Selezione nuova azione casuale
-                    let rand = Int.random(in: 1...3)
-                    switch rand {
-                    case 1:
-                        currentState = .idle
-                    case 2:
-                        currentState = .walkRight
-                    default:
-                        currentState = .walkLeft
+                    // Movimento orizzontale a terra
+                    if currentState != .sleeping {
+                        if walkTicksRemaining > 0 {
+                            walkTicksRemaining -= 1
+                            let speed = settings.walkSpeed
+                            if currentState == .walkRight {
+                                posX += speed
+                            } else if currentState == .walkLeft {
+                                posX -= speed
+                            }
+
+                            // Rimbalzo sui bordi schermo
+                            physics.handleHorizontalBounds(
+                                posX: &posX,
+                                windowWidth: size,
+                                currentState: &currentState
+                            )
+                        } else {
+                            // Selezione nuova azione casuale
+                            let rand = Int.random(in: 1...3)
+                            switch rand {
+                            case 1:
+                                currentState = .idle
+                            case 2:
+                                currentState = .walkRight
+                            default:
+                                currentState = .walkLeft
+                            }
+                            walkTicksRemaining = Int.random(in: 60...160)
+                            animIndex = 0
+                        }
                     }
-                    walkTicksRemaining = Int.random(in: 60...160)
-                    animIndex = 0
                 }
             }
         }
