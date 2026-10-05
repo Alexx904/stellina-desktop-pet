@@ -1,0 +1,35 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Select Xcode version
+      run: sudo xcode-select -s /Applications/Xcode.app
+
+    - name: Compile and Package Stellina.app
+      run: |
+        chmod +x scripts/build_app.sh
+        ./scripts/build_app.sh
+
+    - name: Compress App Bundle
+      run: |
+        cd build
+        zip -r -y Stellina-macOS.zip Stellina.app
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Stellina-macOS-App
+        path: build/Stellina-macOS.zip
