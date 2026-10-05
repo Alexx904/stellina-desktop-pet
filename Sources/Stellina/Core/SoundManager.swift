@@ -7,6 +7,8 @@ public enum SoundEffect {
     case dragStart
     case wakeUp
     case hop
+    case carrotSpawn
+    case eat
 }
 
 public final class SoundManager {
@@ -21,6 +23,21 @@ public final class SoundManager {
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+
+            if effect == .eat {
+                // Effetto sonoro croccante e sequenziale di masticazione (3 morsi cartoon ravvicinati)
+                let bites = ["Pop", "Purr", "Pop"]
+                for (index, biteName) in bites.enumerated() {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.09) {
+                        if let sound = NSSound(named: biteName) {
+                            sound.volume = Float(self.settings.soundVolume)
+                            sound.play()
+                        }
+                    }
+                }
+                return
+            }
+
             let soundName: String
             switch effect {
             case .patPat:
@@ -34,6 +51,10 @@ public final class SoundManager {
                 soundName = "Tink"
             case .hop:
                 soundName = "Hero"
+            case .carrotSpawn:
+                soundName = "Bottle"
+            case .eat:
+                soundName = "Pop"
             }
 
             if let sound = NSSound(named: soundName) {

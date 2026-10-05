@@ -39,6 +39,7 @@ public final class BehaviorSystem {
     public var onPetPatEnded: (() -> Void)?
     public var onWakeUpTriggered: (() -> Void)?
     public var onSleepZzzTriggered: (() -> Void)?
+    public var onEatTriggered: (() -> Void)?
 
     private init() {
         resetToInitialPosition()
@@ -64,6 +65,25 @@ public final class BehaviorSystem {
         onPetPatTriggered?()
     }
 
+    public func goToSleep() {
+        guard currentState != .dragged && currentState != .falling else { return }
+        currentState = .sleeping
+        resetInactivity()
+        walkTicksRemaining = 0
+        pettedTicksRemaining = 0
+        sleepZzzTickCounter = 0
+        animIndex = 0
+        onSleepZzzTriggered?()
+    }
+
+    public func toggleSleep() {
+        if currentState == .sleeping {
+            wakeUp()
+        } else {
+            goToSleep()
+        }
+    }
+
     public func wakeUp() {
         guard currentState == .sleeping else { return }
         currentState = .idle
@@ -71,6 +91,16 @@ public final class BehaviorSystem {
         walkTicksRemaining = 60
         SoundManager.shared.play(.wakeUp)
         onWakeUpTriggered?()
+    }
+
+    public func feed() {
+        resetInactivity()
+        if currentState == .sleeping {
+            currentState = .idle
+        }
+        walkTicksRemaining = 40
+        SoundManager.shared.play(.eat)
+        onEatTriggered?()
     }
 
     public func resetToInitialPosition() {

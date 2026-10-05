@@ -1,7 +1,7 @@
 import AppKit
 import QuartzCore
 
-public final class PetView: NSView {
+public final class PetView: NSView, NSMenuDelegate {
     private var dragStartWindowOrigin: NSPoint = .zero
     private var dragStartMouseLocation: NSPoint = .zero
     private let behavior = BehaviorSystem.shared
@@ -16,6 +16,7 @@ public final class PetView: NSView {
     private let spriteLayer = CALayer()
     private let headpatLayer = CALayer()
     private var isHeadpatActive: Bool = false
+    private var sleepMenuItem: NSMenuItem?
 
     public var onOpenSettingsRequested: (() -> Void)?
 
@@ -98,10 +99,22 @@ public final class PetView: NSView {
 
     private func setupContextMenu() {
         let menu = NSMenu()
+        menu.delegate = self
 
         let petItem = NSMenuItem(title: "Fai le Coccole 💖", action: #selector(patAction), keyEquivalent: "p")
         petItem.target = self
         menu.addItem(petItem)
+
+        let sleepItem = NSMenuItem(title: "Metti a Dormire 💤", action: #selector(toggleSleepAction), keyEquivalent: "s")
+        sleepItem.target = self
+        self.sleepMenuItem = sleepItem
+        menu.addItem(sleepItem)
+
+        let carrotItem = NSMenuItem(title: "Lancia Carota 🥕", action: #selector(spawnCarrotAction), keyEquivalent: "c")
+        carrotItem.target = self
+        menu.addItem(carrotItem)
+
+        menu.addItem(NSMenuItem.separator())
 
         let settingsItem = NSMenuItem(title: "Impostazioni...", action: #selector(openSettingsAction), keyEquivalent: ",")
         settingsItem.target = self
@@ -120,8 +133,24 @@ public final class PetView: NSView {
         self.menu = menu
     }
 
+    public func menuNeedsUpdate(_ menu: NSMenu) {
+        if behavior.currentState == .sleeping {
+            sleepMenuItem?.title = "Sveglia Stellina ☀️"
+        } else {
+            sleepMenuItem?.title = "Metti a Dormire 💤"
+        }
+    }
+
     @objc private func patAction() {
         behavior.pet()
+    }
+
+    @objc private func toggleSleepAction() {
+        behavior.toggleSleep()
+    }
+
+    @objc private func spawnCarrotAction() {
+        CarrotManager.shared.spawnCarrot()
     }
 
     @objc private func openSettingsAction() {
@@ -404,6 +433,83 @@ public final class PetView: NSView {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
             zzzTextLayer.removeFromSuperlayer()
+        }
+    }
+
+    public func triggerEatAnimation() {
+        spawnEatParticles()
+
+        // Animazione cartoon di masticazione procedurale (munching chew squish & bounce)
+        let anim = CAKeyframeAnimation(keyPath: "transform")
+        let base = CATransform3DIdentity
+        let chew1 = CATransform3DMakeScale(1.18, 0.85, 1.0)
+        let chew2 = CATransform3DMakeScale(0.92, 1.10, 1.0)
+        let chew3 = CATransform3DMakeScale(1.15, 0.88, 1.0)
+        let chew4 = CATransform3DMakeScale(0.95, 1.05, 1.0)
+
+        anim.values = [
+            NSValue(caTransform3D: base),
+            NSValue(caTransform3D: chew1),
+            NSValue(caTransform3D: chew2),
+            NSValue(caTransform3D: chew3),
+            NSValue(caTransform3D: chew4),
+            NSValue(caTransform3D: base)
+        ]
+        anim.keyTimes = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+        anim.duration = 0.55
+        anim.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        spriteLayer.add(anim, forKey: "eatChewAnim")
+    }
+
+    private func spawnEatParticles() {
+        guard let rootLayer = self.layer else { return }
+
+        let particles = ["🥕", "🔸", "✨", "🧡", "🥕"]
+        for (i, p) in particles.enumerated() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.08) { [weak self] in
+                guard let self = self, let root = self.layer else { return }
+
+                let pLayer = CATextLayer()
+                pLayer.string = p
+                pLayer.fontSize = CGFloat.random(in: 16...22)
+                pLayer.alignmentMode = .center
+                pLayer.zPosition = 100
+
+                let startX = (self.bounds.width / 2.0) + CGFloat.random(in: -25...25)
+                let startY = self.bounds.height * 0.45
+                pLayer.frame = CGRect(x: startX, y: startY, width: 30, height: 30)
+
+                root.addSublayer(pLayer)
+
+                let duration: CFTimeInterval = 0.75
+                let moveY = CABasicAnimation(keyPath: "position.y")
+                moveY.fromValue = startY
+                moveY.toValue = startY + CGFloat.random(in: 40...75)
+
+                let moveX = CABasicAnimation(keyPath: "position.x")
+                moveX.fromValue = startX
+                moveX.toValue = startX + CGFloat.random(in: -35...35)
+
+                let fade = CABasicAnimation(keyPath: "opacity")
+                fade.fromValue = 1.0
+                fade.toValue = 0.0
+
+                let scale = CABasicAnimation(keyPath: "transform.scale")
+                scale.fromValue = 0.8
+                scale.toValue = 1.2
+
+                let group = CAAnimationGroup()
+                group.animations = [moveY, moveX, fade, scale]
+                group.duration = duration
+                group.isRemovedOnCompletion = false
+                group.fillMode = .forwards
+
+                pLayer.add(group, forKey: "eatParticleAnim")
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                    pLayer.removeFromSuperlayer()
+                }
+            }
         }
     }
 }

@@ -24,8 +24,13 @@ public struct InteractionsSettingsView: View {
 
                     HStack {
                         Spacer()
-                        Button("Ascolta Suono di Prova 🎵") {
+                        Button("Suono Coccole 🎵") {
                             SoundManager.shared.play(.patPat)
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button("Suono Pappa 🥕") {
+                            SoundManager.shared.play(.eat)
                         }
                         .buttonStyle(.bordered)
                     }
@@ -62,9 +67,23 @@ public struct InteractionsSettingsView: View {
                     }
                     .padding(.vertical, 2)
 
-                    Text("Quando Stellina dorme, sfiora il mouse su di lei per svegliarla dolcemente.")
+                    Text("Quando Stellina dorme, sfiora il mouse su di lei per svegliarla dolcemente. Puoi anche metterla a dormire o svegliarla in qualsiasi momento dal menu del tasto destro o dalla StatusBar.")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                }
+            }
+
+            Section(header: Text("Carote & Nutrizione 🥕").font(.headline)) {
+                Text("Puoi far apparire una carota cliccando con il tasto destro su Stellina. Le carote hanno la stessa fisica gravitazionale di Stellina: puoi afferrarla e trascinarla fino al coniglietto per fargliela sgranocchiare!")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                HStack {
+                    Spacer()
+                    Button("Lancia una Carota Ora 🥕") {
+                        CarrotManager.shared.spawnCarrot()
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
             }
         }

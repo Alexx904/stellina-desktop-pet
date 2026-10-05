@@ -73,6 +73,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.petView?.spawnZzzParticle()
         }
 
+        behavior.onEatTriggered = { [weak self] in
+            self?.petView?.triggerEatAnimation()
+        }
+
         // 5. Ascolta modifiche delle dimensioni dalle impostazioni
         settings.$windowSize
             .receive(on: RunLoop.main)
@@ -92,7 +96,11 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     private func startSimulationLoop() {
         simulationTimer?.invalidate()
         let timer = Timer(timeInterval: 0.033, repeats: true) { [weak self] _ in
-            self?.behavior.tick()
+            guard let self = self else { return }
+            self.behavior.tick()
+            if let petFrame = self.petWindow?.frame {
+                CarrotManager.shared.tick(petFrame: petFrame)
+            }
         }
         RunLoop.main.add(timer, forMode: .common)
         self.simulationTimer = timer
@@ -100,5 +108,6 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
     public func applicationWillTerminate(_ notification: Notification) {
         simulationTimer?.invalidate()
+        CarrotManager.shared.removeAllCarrots()
     }
 }

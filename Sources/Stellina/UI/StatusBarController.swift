@@ -1,10 +1,12 @@
 import AppKit
 
-public final class StatusBarController {
+public final class StatusBarController: NSObject, NSMenuDelegate {
     private var statusItem: NSStatusItem?
+    private var sleepMenuItem: NSMenuItem?
     public var onOpenSettingsRequested: (() -> Void)?
 
-    public init() {
+    override public init() {
+        super.init()
         setupStatusBar()
     }
 
@@ -17,10 +19,22 @@ public final class StatusBarController {
         }
 
         let menu = NSMenu()
+        menu.delegate = self
 
         let appTitle = NSMenuItem(title: "🐾 Stellina Desktop Pet v1.0", action: nil, keyEquivalent: "")
         appTitle.isEnabled = false
         menu.addItem(appTitle)
+
+        menu.addItem(NSMenuItem.separator())
+
+        let sleepItem = NSMenuItem(title: "Metti a Dormire 💤", action: #selector(toggleSleepAction), keyEquivalent: "s")
+        sleepItem.target = self
+        self.sleepMenuItem = sleepItem
+        menu.addItem(sleepItem)
+
+        let carrotItem = NSMenuItem(title: "Lancia Carota 🥕", action: #selector(spawnCarrotAction), keyEquivalent: "c")
+        carrotItem.target = self
+        menu.addItem(carrotItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -39,6 +53,22 @@ public final class StatusBarController {
         menu.addItem(quitItem)
 
         statusItem?.menu = menu
+    }
+
+    public func menuNeedsUpdate(_ menu: NSMenu) {
+        if BehaviorSystem.shared.currentState == .sleeping {
+            sleepMenuItem?.title = "Sveglia Stellina ☀️"
+        } else {
+            sleepMenuItem?.title = "Metti a Dormire 💤"
+        }
+    }
+
+    @objc private func toggleSleepAction() {
+        BehaviorSystem.shared.toggleSleep()
+    }
+
+    @objc private func spawnCarrotAction() {
+        CarrotManager.shared.spawnCarrot()
     }
 
     @objc private func openSettingsAction() {
