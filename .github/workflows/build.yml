@@ -9,15 +9,27 @@ on:
 
 jobs:
   build-macos:
-    name: Build macOS App
+    name: Build macOS App (Universal)
     runs-on: macos-latest
+    timeout-minutes: 20
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode.app
+    - name: Display Swift and Xcode Environment
+      run: |
+        swift --version
+        xcodebuild -version || true
+
+    - name: Cache Swift Package Manager (.build)
+      uses: actions/cache@v4
+      with:
+        path: .build
+        key: spm-${{ runner.os }}-${{ hashFiles('Package.swift', 'Sources/**/*.swift') }}
+        restore-keys: |
+          spm-${{ runner.os }}-${{ hashFiles('Package.swift') }}
+          spm-${{ runner.os }}-
 
     - name: Compile and Package Stellina.app
       run: |
@@ -34,4 +46,6 @@ jobs:
       with:
         name: Stellina-macOS-App
         path: build/Stellina-macOS.zip
+        if-no-files-found: error
+
 

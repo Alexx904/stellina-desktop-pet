@@ -74,49 +74,28 @@ public final class AssetManager {
         return cache[.idle] ?? []
     }
 
-    /// Risolve il percorso URL di un asset cercandolo nel Bundle .app, SPM Bundle.module o percorsi di sviluppo
+    /// Risolve il percorso URL di un asset cercandolo nel Bundle .app o nella cartella di sviluppo locale
     public func urlForAsset(named name: String) -> URL? {
-        // Tentativo 1: Bundle.main / Resources / Assets Stellina
+        // Tentativo 1: Sotto-cartella "Assets Stellina" nel Resources del Bundle .app
         if let url = Bundle.main.url(forResource: name, withExtension: nil, subdirectory: "Assets Stellina") {
             return url
         }
 
-        // Tentativo 2: Bundle.main resourceURL diretto sotto Assets Stellina
+        // Tentativo 2: Percorso diretto sotto Resources/Assets Stellina
         if let resURL = Bundle.main.resourceURL?.appendingPathComponent("Assets Stellina").appendingPathComponent(name),
            FileManager.default.fileExists(atPath: resURL.path) {
             return resURL
         }
 
-        // Tentativo 3: Bundle.main diretto
+        // Tentativo 3: Risorsa generica nel Bundle .app
         if let url = Bundle.main.url(forResource: name, withExtension: nil) {
             return url
         }
 
-        // Tentativo 4: Bundle.module per SPM
-        #if SWIFT_PACKAGE
-        if let moduleURL = Bundle.module.url(forResource: name, withExtension: nil, subdirectory: "Assets Stellina") {
-            return moduleURL
-        }
-        if let moduleURL = Bundle.module.url(forResource: name, withExtension: nil) {
-            return moduleURL
-        }
-        #endif
-
-        // Tentativo 5: Cartella locale durante sviluppo
+        // Tentativo 4: Cartella locale radice durante sviluppo / 'make run' / 'swift run'
         let localPath = "Assets Stellina/\(name)"
         if FileManager.default.fileExists(atPath: localPath) {
             return URL(fileURLWithPath: localPath)
-        }
-
-        let devPath = "Sources/Stellina/Resources/Assets Stellina/\(name)"
-        if FileManager.default.fileExists(atPath: devPath) {
-            return URL(fileURLWithPath: devPath)
-        }
-
-        // Fallback risorsa generica nel bundle
-        if let directResURL = Bundle.main.resourceURL?.appendingPathComponent(name),
-           FileManager.default.fileExists(atPath: directResURL.path) {
-            return directResURL
         }
 
         return nil

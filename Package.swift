@@ -17,10 +17,7 @@ let package = Package(
         .executableTarget(
             name: "Stellina",
             dependencies: [],
-            path: "Sources/Stellina",
-            resources: [
-                .copy("Resources/Assets Stellina")
-            ]
+            path: "Sources/Stellina"
         )
     ]
 )

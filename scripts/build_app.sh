@@ -16,8 +16,16 @@ echo "🌟 =========================================="
 
 cd "${PROJECT_DIR}"
 
-# 1. Compila la release con Swift Package Manager
-swift build -c release
+# 1. Compila la release con Swift Package Manager (Universal Binary arm64 + x86_64)
+echo "🔨 Compilazione eseguibile macOS (Universal arm64 + x86_64)..."
+BUILD_FLAGS=("-c" "release")
+if swift build -c release --arch arm64 --arch x86_64 >/dev/null 2>&1; then
+    echo "✅ Compilazione Universal Binary riuscita."
+    BUILD_FLAGS+=("--arch" "arm64" "--arch" "x86_64")
+else
+    echo "ℹ️ SDK multi-architettura non disponibile, compilazione per architettura host..."
+    swift build -c release
+fi
 
 # 2. Crea la struttura standard del bundle macOS .app
 echo "📦 Confezionamento del bundle ${APP_NAME}.app..."
@@ -26,13 +34,18 @@ mkdir -p "${MACOS_DIR}"
 mkdir -p "${RESOURCES_DIR}"
 
 # 3. Copia l'eseguibile compilato
-BIN_PATH="$(swift build -c release --show-bin-path)/${APP_NAME}"
+BIN_PATH="$(swift build "${BUILD_FLAGS[@]}" --show-bin-path)/${APP_NAME}"
 if [ ! -f "${BIN_PATH}" ]; then
     echo "❌ Errore: Eseguibile non trovato in ${BIN_PATH}"
     exit 1
 fi
 cp "${BIN_PATH}" "${MACOS_DIR}/${APP_NAME}"
 chmod +x "${MACOS_DIR}/${APP_NAME}"
+
+# Verifica architettura binaria prodotta
+if command -v lipo >/dev/null 2>&1; then
+    echo "ℹ️ Architetture incluse: $(lipo -archs "${MACOS_DIR}/${APP_NAME}")"
+fi
 
 # 4. Copia Info.plist
 cp "${PROJECT_DIR}/Resources/Info.plist" "${CONTENTS_DIR}/Info.plist"
