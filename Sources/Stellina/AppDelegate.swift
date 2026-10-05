@@ -58,7 +58,11 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         behavior.onPetPatTriggered = { [weak self] in
-            self?.petView?.triggerPetPatEffect()
+            self?.petView?.startHeadpatAnimation()
+        }
+
+        behavior.onPetPatEnded = { [weak self] in
+            self?.petView?.stopHeadpatAnimation()
         }
 
         behavior.onWakeUpTriggered = { [weak self] in

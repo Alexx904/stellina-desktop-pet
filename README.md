@@ -1,7 +1,6 @@
-# 🐾 Stellina - Desktop Pet (macOS & Windows)
+# 🐾 Stellina - Desktop Pet per macOS
 
-**Stellina** è un'adorabile applicazione desktop pet cross-platform, fluida a 60 FPS e con un consumo di risorse praticamente nullo (< 0.5% CPU).
-Nativa per **macOS** (scritta in Swift con AppKit + SwiftUI) e dotata di build standalone per **Windows** (`Stellina.exe`).
+**Stellina** è un'adorabile applicazione desktop pet nativa per **macOS** (scritta in Swift con AppKit + SwiftUI), fluida a 60 FPS e con un consumo di risorse praticamente nullo (< 0.5% CPU).
 
 ---
 
@@ -12,7 +11,7 @@ Nativa per **macOS** (scritta in Swift con AppKit + SwiftUI) e dotata di build s
   - Cade dall'alto e atterra sul pavimento dello schermo con un rimbalzo morbido (*squish*).
   - Quando la trascini in aria si allunga verso l'alto (*stretch*) come un gattino.
 - **💖 Coccole & Pat-Pat Interattivo**:
-  - Sfiora velocemente il mouse avanti e indietro sopra Stellina per farle le carezze: fa le fusa e sprigiona una pioggia di **cuoricini ❤️ fluttuanti**!
+  - Sfiora velocemente il mouse avanti e indietro sopra Stellina per farle le carezze: compare la mano animata che la accarezza (`headpat-hand.gif`), Stellina si piega e comprime dolcemente ad ogni tocco (*squish & bend*), fa le fusa e sprigiona una pioggia di **cuoricini ❤️ fluttuanti**!
   - Disponibile anche con clic destro -> *"Fai le Coccole 💖"*.
 - **💤 Modalità Sonno Naturale (Sleep Mode)**:
   - Se lasci Stellina indisturbata per qualche minuto, si accoccola ed entra nel mondo dei sogni con le bollicine **`Zzz`** 💤.
@@ -34,52 +33,52 @@ Nativa per **macOS** (scritta in Swift con AppKit + SwiftUI) e dotata di build s
 
 ```
 stellina-desktop-pet/
-├── Assets Stellina/                      # Sprite grafici di default
+├── Assets Stellina/                      # Sprite grafici di default e GIF
 │   ├── Fall.png
 │   ├── Idle.png
 │   ├── left1.png
 │   ├── left2.png
 │   ├── right1.png
-│   └── right2.png
+│   ├── right2.png
+│   ├── Sleep.png
+│   └── headpat-hand.gif
 ├── Package.swift                         # Configurazione Swift Package Manager
-├── Makefile                              # Scorciatoie per compilazione macOS & Windows
+├── Makefile                              # Scorciatoie per compilazione macOS
 ├── scripts/
-│   ├── build_app.sh                     # Script di generazione bundle macOS .app
-│   ├── build_windows.bat                # Script batch compilazione Stellina.exe
-│   └── build_windows.ps1                # Script PowerShell compilazione Stellina.exe
+│   └── build_app.sh                      # Script di generazione bundle macOS .app
 ├── Resources/
 │   ├── Info.plist                        # Configurazione bundle macOS
-│   └── Stellina.entitlements              # Permessi sandbox
+│   └── Stellina.entitlements             # Permessi sandbox
 └── Sources/
-    ├── Stellina/                         # Codice sorgente nativo macOS (Swift)
-    │   ├── main.swift                    # Entry point NSApplication
-    │   ├── AppDelegate.swift             # Ciclo di vita applicativo
-    │   ├── Core/
-    │   │   ├── PetState.swift            # Macchina a stati (idle, walk, fall, dragged, petted, sleeping)
-    │   │   ├── PetSettings.swift         # Persistenza preferenze (UserDefaults) e hot reload
-    │   │   ├── PhysicsSystem.swift       # Motore gravità e piano terra
-    │   │   ├── BehaviorSystem.swift      # Timer decisionale, inattività e suoni
-    │   │   ├── SoundManager.swift        # Gestione audio ed effetti sonori nativi
-    │   │   └── AssetManager.swift        # Caricamento intelligente da bundle o file custom
-    │   └── UI/
-    │       ├── PetWindow.swift           # NSPanel borderless trasparente flottante
-    │       ├── PetView.swift             # Rendering CALayer, gesture pat-pat e particelle
-    │       ├── StatusBarController.swift # Icona zampetta 🐾 nella barra di stato
-    │       └── Settings/
-    │           ├── SettingsWindowController.swift
-    │           ├── SettingsView.swift
-    │           ├── SpriteSettingsView.swift
-    │           ├── PhysicsSettingsView.swift
-    │           └── InteractionsSettingsView.swift
-    └── Windows/                          # Codice sorgente per Windows
-        └── main.py                       # App Windows con fisica, particelle e suoni
+    └── Stellina/                         # Codice sorgente nativo macOS (Swift)
+        ├── main.swift                    # Entry point NSApplication
+        ├── AppDelegate.swift             # Ciclo di vita applicativo
+        ├── Core/
+        │   ├── PetState.swift            # Macchina a stati
+        │   ├── PetSettings.swift         # Persistenza preferenze (UserDefaults) e hot reload
+        │   ├── PhysicsSystem.swift       # Motore gravità e piano terra
+        │   ├── BehaviorSystem.swift      # Timer decisionale, inattività e suoni
+        │   ├── SoundManager.swift        # Gestione audio ed effetti sonori nativi
+        │   └── AssetManager.swift        # Caricamento e cache intelligente da bundle o file custom
+        └── UI/
+            ├── PetWindow.swift           # NSPanel borderless trasparente flottante
+            ├── PetView.swift             # Rendering CALayer, gesture pat-pat, deformazione e GIF overlay
+            ├── StatusBarController.swift # Icona zampetta 🐾 nella barra di stato
+            └── Settings/
+                ├── SettingsWindowController.swift
+                ├── SettingsView.swift
+                ├── SpriteSettingsView.swift
+                ├── PhysicsSettingsView.swift
+                └── InteractionsSettingsView.swift
 ```
 
 ---
 
 ## 🚀 Compilazione ed Esecuzione
 
-### 🍎 Su macOS
+### 🍎 Requisiti
+- macOS 12.0 (Monterey) o successivo
+- Xcode 14+ / Swift 5.9+
 
 ```bash
 # Compilazione e avvio rapido in sviluppo
@@ -89,24 +88,5 @@ make run
 make package
 # oppure: ./scripts/build_app.sh
 ```
-Il bundle standalone verrà generato in `build/Stellina.app`.
+Il bundle standalone verrà generato in `build/Stellina.app`. Per eseguirlo basta aprirlo con `open build/Stellina.app`.
 
----
-
-### 🪟 Su Windows
-
-Per generare l'eseguibile standalone **`Stellina.exe`** (senza console nera di sfondo):
-
-```powershell
-# Esegui lo script di build PowerShell:
-powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1
-
-# Oppure tramite il file batch:
-scripts\build_windows.bat
-```
-
-L'eseguibile autonomo pronto all'uso verrà creato all'interno di:
-```
-build\Stellina-Windows\Stellina.exe
-```
-Basta fare doppio clic su `Stellina.exe` per avviare subito la tua Stellina!

@@ -36,6 +36,7 @@ public final class BehaviorSystem {
     public var onFrameUpdate: ((NSImage?, CGPoint) -> Void)?
     public var onLanded: (() -> Void)?
     public var onPetPatTriggered: (() -> Void)?
+    public var onPetPatEnded: (() -> Void)?
     public var onWakeUpTriggered: (() -> Void)?
     public var onSleepZzzTriggered: (() -> Void)?
 
@@ -54,9 +55,12 @@ public final class BehaviorSystem {
             wakeUp()
             return
         }
+        let wasAlreadyPetted = (currentState == .petted)
         currentState = .petted
-        pettedTicksRemaining = 50 // ~1.5 secondi
-        SoundManager.shared.play(.patPat)
+        pettedTicksRemaining = 60 // ~2 secondi di coccole
+        if !wasAlreadyPetted {
+            SoundManager.shared.play(.patPat)
+        }
         onPetPatTriggered?()
     }
 
@@ -131,6 +135,7 @@ public final class BehaviorSystem {
                     if pettedTicksRemaining <= 0 {
                         currentState = .idle
                         walkTicksRemaining = Int.random(in: 50...100)
+                        onPetPatEnded?()
                     }
                 } else if currentState == .sleeping {
                     // Emette l'effetto grafico Zzz periodicamente (~1 volta al secondo)

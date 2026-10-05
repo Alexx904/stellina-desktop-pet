@@ -35,7 +35,7 @@ public struct InteractionsSettingsView: View {
             Section(header: Text("Coccole & Affetto (Pat-Pat)").font(.headline)) {
                 Toggle("Abilita Carezze (Pat-Pat)", isOn: $settings.petPatEnabled)
 
-                Text("Passa il mouse a destra e a sinistra sopra Stellina per accarezzarla e farla fare le fusa con cuoricini ❤️.")
+                Text("Passa il mouse a destra e a sinistra sopra Stellina per accarezzarla: una mano animata la coccolerà dolcemente facendola fare le fusa e sprigionando cuoricini ❤️.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
