@@ -29,6 +29,7 @@ public final class BehaviorSystem {
     private var walkTicksRemaining: Int = 0
     private var pettedTicksRemaining: Int = 0
     private var inactivityTicks: Int = 0
+    private var sleepZzzTickCounter: Int = 0
     private var animIndex: Int = 0
     private var animTickCounter: Int = 0
 
@@ -36,6 +37,7 @@ public final class BehaviorSystem {
     public var onLanded: (() -> Void)?
     public var onPetPatTriggered: (() -> Void)?
     public var onWakeUpTriggered: (() -> Void)?
+    public var onSleepZzzTriggered: (() -> Void)?
 
     private init() {
         resetToInitialPosition()
@@ -131,8 +133,14 @@ public final class BehaviorSystem {
                         walkTicksRemaining = Int.random(in: 50...100)
                     }
                 } else if currentState == .sleeping {
-                    // Se sta dormendo non cammina
+                    // Emette l'effetto grafico Zzz periodicamente (~1 volta al secondo)
+                    sleepZzzTickCounter += 1
+                    if sleepZzzTickCounter >= 30 {
+                        sleepZzzTickCounter = 0
+                        onSleepZzzTriggered?()
+                    }
                 } else {
+                    sleepZzzTickCounter = 0
                     // Controllo inattività per addormentarsi
                     inactivityTicks += 1
                     let sleepThresholdTicks = Int(settings.sleepIdleSeconds * 30)

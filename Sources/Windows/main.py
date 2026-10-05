@@ -125,14 +125,16 @@ def main():
             return None
         img = tk.PhotoImage(file=path)
         orig_w = img.width()
-        sub = max(1, round(orig_w / TARGET_WIDTH))
+        orig_h = img.height()
+        sub = max(1, round(max(orig_w / TARGET_WIDTH, orig_h / TARGET_HEIGHT)))
         return img.subsample(sub, sub)
 
     images = {
         "idle": [load_scaled_image("Idle.png")],
         "walkLeft": [load_scaled_image("left1.png"), load_scaled_image("left2.png")],
         "walkRight": [load_scaled_image("right1.png"), load_scaled_image("right2.png")],
-        "falling": [load_scaled_image("Fall.png")]
+        "falling": [load_scaled_image("Fall.png")],
+        "sleeping": [load_scaled_image("Sleep.png")]
     }
 
     for k in images:
@@ -328,8 +330,14 @@ def main():
         lbl = "🔊 Audio: Attivo" if sound_player.enabled else "🔇 Audio: Disattivo"
         context_menu.entryconfigure(2, label=lbl)
 
+    def force_sleep():
+        state["current_state"] = "sleeping"
+        state["velocity_y"] = 0.0
+        state["pos_y"] = ground_y
+
     context_menu.add_command(label="🐾 Stellina Desktop Pet", state="disabled")
     context_menu.add_command(label="💖 Fai le Coccole (Pat-Pat)", command=trigger_pet)
+    context_menu.add_command(label="💤 Metti a Dormire", command=force_sleep)
     context_menu.add_command(label="🔊 Audio: Attivo", command=toggle_sound)
     context_menu.add_separator()
     context_menu.add_command(label="Riposiziona al Centro", command=reset_pos)
@@ -368,9 +376,16 @@ def main():
                         state["current_state"] = "idle"
                         state["walk_ticks"] = random.randint(50, 100)
                 elif state["current_state"] == "sleeping":
-                    # Emetti periodicamente le bolle Zzz
-                    if random.random() < 0.04:
-                        spawn_particle("💤", color="#5C6BC0", size=15, offset_x=TARGET_WIDTH//2 + random.randint(-10, 10), offset_y=40)
+                    # Emetti periodicamente le bolle ZzZz
+                    if random.random() < 0.08:
+                        zzz_text = random.choice(["z", "Zz", "ZzZz", "💤"])
+                        spawn_particle(
+                            zzz_text,
+                            color=random.choice(["#5C6BC0", "#7986CB", "#9FA8DA"]),
+                            size=random.randint(14, 20),
+                            offset_x=TARGET_WIDTH // 2 + random.randint(-15, 20),
+                            offset_y=TARGET_HEIGHT // 2 - 20
+                        )
                 else:
                     # Inattività verso lo stato di sonno (~45 secondi a 30 FPS = 1350 ticks)
                     state["inactivity_ticks"] += 1

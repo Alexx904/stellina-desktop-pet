@@ -244,4 +244,47 @@ public final class PetView: NSView {
             }
         }
     }
+
+    public func spawnZzzParticle() {
+        guard let rootLayer = self.layer else { return }
+
+        let zzzTextLayer = CATextLayer()
+        let texts = ["z", "Zz", "ZzZz", "💤"]
+        zzzTextLayer.string = texts.randomElement() ?? "ZzZz"
+        zzzTextLayer.fontSize = CGFloat.random(in: 15...20)
+        zzzTextLayer.alignmentMode = .center
+        zzzTextLayer.foregroundColor = NSColor(calibratedRed: 0.45, green: 0.55, blue: 0.95, alpha: 0.9).cgColor
+
+        let startX = (bounds.width / 2.0) + CGFloat.random(in: -15...20)
+        let startY = bounds.height * 0.65
+        zzzTextLayer.frame = CGRect(x: startX, y: startY, width: 44, height: 26)
+
+        rootLayer.addSublayer(zzzTextLayer)
+
+        let duration: CFTimeInterval = 1.4
+
+        let moveYAnim = CABasicAnimation(keyPath: "position.y")
+        moveYAnim.fromValue = startY
+        moveYAnim.toValue = startY + CGFloat.random(in: 35...60)
+
+        let moveXAnim = CABasicAnimation(keyPath: "position.x")
+        moveXAnim.fromValue = startX
+        moveXAnim.toValue = startX + CGFloat.random(in: -15...25)
+
+        let fadeAnim = CABasicAnimation(keyPath: "opacity")
+        fadeAnim.fromValue = 1.0
+        fadeAnim.toValue = 0.0
+
+        let group = CAAnimationGroup()
+        group.animations = [moveYAnim, moveXAnim, fadeAnim]
+        group.duration = duration
+        group.isRemovedOnCompletion = false
+        group.fillMode = .forwards
+
+        zzzTextLayer.add(group, forKey: "zzzFloat")
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            zzzTextLayer.removeFromSuperlayer()
+        }
+    }
 }

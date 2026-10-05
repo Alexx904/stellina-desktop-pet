@@ -65,6 +65,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.petView?.triggerHop()
         }
 
+        behavior.onSleepZzzTriggered = { [weak self] in
+            self?.petView?.spawnZzzParticle()
+        }
+
         // 5. Ascolta modifiche delle dimensioni dalle impostazioni
         settings.$windowSize
             .receive(on: RunLoop.main)

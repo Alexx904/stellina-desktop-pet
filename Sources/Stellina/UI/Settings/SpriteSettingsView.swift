@@ -114,6 +114,20 @@ public struct SpriteSettingsView: View {
                 } onReset: {
                     settings.customFallPath = nil
                 }
+
+                Divider()
+
+                // Sezione Sonno
+                spriteSlotRow(
+                    title: "Addormentato (Sleep)",
+                    subtitle: "Quando Stellina riposa dopo inattività",
+                    currentCustomPath: settings.customSleepPath,
+                    defaultName: "Sleep.png"
+                ) { newPath in
+                    settings.customSleepPath = newPath
+                } onReset: {
+                    settings.customSleepPath = nil
+                }
             }
             .padding(20)
         }

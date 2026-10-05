@@ -13,6 +13,7 @@ public final class PetSettings: ObservableObject {
         static let customWalkLeftPaths = "stellina_custom_walk_left"
         static let customWalkRightPaths = "stellina_custom_walk_right"
         static let customFallPath = "stellina_custom_fall"
+        static let customSleepPath = "stellina_custom_sleep"
 
         // Audio & Interazioni
         static let soundEnabled = "stellina_sound_enabled"
@@ -89,6 +90,13 @@ public final class PetSettings: ObservableObject {
         }
     }
 
+    @Published public var customSleepPath: String? {
+        didSet {
+            UserDefaults.standard.set(customSleepPath, forKey: Keys.customSleepPath)
+            onSpritesChanged?()
+        }
+    }
+
     /// Callback invocato quando gli sprite cambiano per consentire l'hot-reload
     public var onSpritesChanged: (() -> Void)?
 
@@ -119,6 +127,7 @@ public final class PetSettings: ObservableObject {
         self.customWalkLeftPaths = defaults.stringArray(forKey: Keys.customWalkLeftPaths) ?? []
         self.customWalkRightPaths = defaults.stringArray(forKey: Keys.customWalkRightPaths) ?? []
         self.customFallPath = defaults.string(forKey: Keys.customFallPath)
+        self.customSleepPath = defaults.string(forKey: Keys.customSleepPath)
     }
 
     public func resetToDefaults() {
@@ -137,6 +146,7 @@ public final class PetSettings: ObservableObject {
         customWalkLeftPaths = []
         customWalkRightPaths = []
         customFallPath = nil
+        customSleepPath = nil
 
         UserDefaults.standard.removeObject(forKey: Keys.windowSize)
         UserDefaults.standard.removeObject(forKey: Keys.walkSpeed)
@@ -151,6 +161,7 @@ public final class PetSettings: ObservableObject {
         UserDefaults.standard.removeObject(forKey: Keys.customWalkLeftPaths)
         UserDefaults.standard.removeObject(forKey: Keys.customWalkRightPaths)
         UserDefaults.standard.removeObject(forKey: Keys.customFallPath)
+        UserDefaults.standard.removeObject(forKey: Keys.customSleepPath)
 
         onSpritesChanged?()
     }

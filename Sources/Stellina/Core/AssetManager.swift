@@ -50,6 +50,14 @@ public final class AssetManager {
         // 5. Dragged usa lo sprite di caduta
         newCache[.dragged] = newCache[.falling] ?? newCache[.idle]
 
+        // 6. Sleeping (Sleep.png)
+        if let customSleep = settings.customSleepPath, let img = NSImage(contentsOfFile: customSleep) {
+            newCache[.sleeping] = [img]
+        } else {
+            let loaded = loadDefaultImages(named: ["Sleep.png"])
+            newCache[.sleeping] = !loaded.isEmpty ? loaded : newCache[.idle]
+        }
+
         self.cache = newCache
     }
 
