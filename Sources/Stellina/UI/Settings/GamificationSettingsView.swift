@@ -109,27 +109,9 @@ public struct GamificationSettingsView: View {
                 }
             }
 
-            Section(header: Text("Accessori Equipaggiabili").font(.headline)) {
-                Picker("Accessorio sulla Testa:", selection: $settings.equippedAccessory) {
-                    ForEach(PetAccessory.allCases) { acc in
-                        Text(acc.displayName).tag(acc)
-                    }
-                }
-                .pickerStyle(.menu)
-
-                Text("L'accessorio viene posizionato sulla testa di Stellina e segue naturalmente i suoi salti, stiracchiamenti e camminate.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
             Section(header: Text("Funzionalità Cute Aggiuntive").font(.headline)) {
                 Toggle("Inclinazione Curiosa (Curious Ear Tilt)", isOn: $settings.curiousEarTiltEnabled)
                 Text("Quando muovi il cursore vicino a Stellina, la testolina si inclina incuriosita verso la direzione del mouse.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-                Toggle("Lucciole Notturne (Sera da orario PC)", isOn: $settings.nightFirefliesEnabled)
-                Text("Dalle 19:30 alle 07:00 (in base all'orologio del tuo Mac), minuscole lucciole luminescenti danzano attorno a Stellina.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

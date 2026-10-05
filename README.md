@@ -50,26 +50,8 @@
 
 ---
 
-### 🎀 Accessori Equipaggiabili sulla Testa
-- Personalizza il look di Stellina con graziosi accessori ancorati alla testolina:
-  - **Nessuno**
-  - **Fiocchetto Rosa 🎀**
-  - **Fiorellino 🌸**
-  - **Cappellino da Festa 🥳**
-  - **Corona Reale 👑**
-  - **Stellina Dorata ⭐**
-- Gli accessori ereditano in tempo reale tutte le trasformazioni del pet (allungamento elastico, schiacciamento, salti e camminata).
-- Selezionabili comodamente dal tab *Bisogni & Accessori* delle Impostazioni, dal menu contestuale del pet o dall'icona nella StatusBar.
-
----
-
 ### 🐰 Curious Ear Tilt (Inclinazione Curiosa delle Orecchie)
 - Quando muovi il cursore del mouse nelle vicinanze di Stellina, la testolina e le orecchie si inclinano dolcemente verso la direzione del puntatore, guardandolo incuriosite, per poi ritornare elastiche al centro.
-
----
-
-### ✨ Effetto Lucciole Notturne (Orario Serale PC)
-- **Rilevamento Orario di Sistema**: Dalle **19:30 alle 07:00** del mattino (in base all'orologio del tuo Mac), graziose lucciole luminescenti (✨, 🟡, 🌟) fluttuano morbidamente con traiettorie sinusoidali attorno a Stellina, creando un'atmosfera magica e rilassante mentre riposa o passeggia.
 
 ---
 
@@ -92,7 +74,6 @@
 ### 🐾 Zero Invasività (Accessory App)
 - Nessuna icona ingombrante nel Dock: Stellina risiede in modo pulito nella **Barra dei Menu** di macOS con l'icona zampetta (`🐾`).
 - Indicatore live dello stato dei bisogni: `💖 Coccole: 85% | 🥕 Sazietà: 60%`.
-- Sottomenu rapido con spunta grafica per cambiare accessori al volo.
 
 ---
 
@@ -100,11 +81,10 @@
 - **Sprite & Aspetto**: Carica sprite personalizzati dal Finder per ogni stato (`Idle`, `Walk`, `Fall`, `Sleep`).
 - **Fisica & Movimento**: Regola dimensioni finestra (px), velocità di camminata, gravità e velocità animazione.
 - **Interazioni & Audio**: Volume suoni, toggle audio fusa/cibo, soglia di inattività per il sonno e pulsante lancia carota.
-- **Bisogni & Accessori**:
+- **Bisogni **:
   - Barre di progresso per Coccole e Fame.
   - Velocità di decadimento configurabili in minuti.
-  - Selettore accessori con preview.
-  - Toggle per *Curious Ear Tilt* e *Lucciole Notturne Serali*.
+  - Toggle per *Curious Ear Tilt*.
 - **Hot-Reload Istantaneo**: Ogni impostazione si aggiorna in tempo reale senza riavvii.
 
 ---
@@ -118,8 +98,8 @@
 | **Trascina Carota verso Stellina** | Stellina mangia la carota, ricarica la sazietà, fa briciole e suoni crunch. |
 | **Passa il mouse avanti/indietro sulla testa** | Fai le coccole a Stellina (mano animata, fusa, cuoricini, ricarica affetto). |
 | **Muovi il mouse vicino a Stellina** | Inclinazione curiosa della testolina (*Curious Ear Tilt*). |
-| **Tasto Destro su Stellina** | Mostra stato bisogni, menu coccole, sonno, carota, sottomenu accessori e impostazioni. |
-| **Icona Zampetta (Barra Menu) 🐾** | Visualizza percentuali `💖 / 🥕`, selettore accessori rapido, controllo sonno e impostazioni. |
+| **Tasto Destro su Stellina** | Mostra stato bisogni, menu coccole, sonno, carota, impostazioni. |
+| **Icona Zampetta (Barra Menu) 🐾** | Visualizza percentuali `💖 / 🥕`, controllo sonno e impostazioni. |
 | **Passa il mouse sul pet addormentato** | Sveglia Stellina con un saltino. |
 
 ---
@@ -156,20 +136,20 @@ stellina-desktop-pet/
         │   ├── PetNeedsManager.swift     # Engine di gamification (coccole, fame, decadimento e soglie)
         │   ├── SoundManager.swift        # Riproduzione ed effetti sonori nativi (NSSound)
         │   ├── AssetManager.swift        # Caching intelligente sprite e decodifica GIF
-        │   └── PetSettings.swift         # Persistenza reattiva UserDefaults con Combine ed enum accessori
+        │   └── PetSettings.swift         # Persistenza reattiva UserDefaults con Combine
         └── UI/
             ├── PetWindow.swift           # NSPanel borderless trasparente a livello floating
-            ├── PetView.swift             # Rendering CALayer, badge bisogni, accessori, tilt, lucciole e VFX
+            ├── PetView.swift             # Rendering CALayer, badge bisogni, tilt e VFX
             ├── CarrotWindow.swift        # NSPanel autonomo trasparente per ogni carota
             ├── CarrotView.swift          # Vista carota con drag & drop nativo e landing squish
-            ├── StatusBarController.swift # Menu item nella barra di stato con livelli bisogni e accessori (🐾)
+            ├── StatusBarController.swift # Menu item nella barra di stato con livelli bisogni
             └── Settings/                 # Interfaccia preferenze SwiftUI
                 ├── SettingsWindowController.swift
                 ├── SettingsView.swift
                 ├── SpriteSettingsView.swift
                 ├── PhysicsSettingsView.swift
                 ├── InteractionsSettingsView.swift
-                └── GamificationSettingsView.swift # Tab SwiftUI per bisogni, accessori e feature cute
+                └── GamificationSettingsView.swift # Tab SwiftUI per bisogni
 ```
 
 ---

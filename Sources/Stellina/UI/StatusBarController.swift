@@ -4,7 +4,6 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
     private var statusItem: NSStatusItem?
     private var sleepMenuItem: NSMenuItem?
     private var needsMenuItem: NSMenuItem?
-    private var accessoryMenuItem: NSMenuItem?
     public var onOpenSettingsRequested: (() -> Void)?
 
     override public init() {
@@ -43,19 +42,6 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
         carrotItem.target = self
         menu.addItem(carrotItem)
 
-        // Sottomenu Accessori
-        let accItem = NSMenuItem(title: "Accessorio sulla Testa", action: nil, keyEquivalent: "")
-        let accSubmenu = NSMenu()
-        for acc in PetAccessory.allCases {
-            let item = NSMenuItem(title: acc.displayName, action: #selector(selectAccessoryAction(_:)), keyEquivalent: "")
-            item.target = self
-            item.representedObject = acc
-            accSubmenu.addItem(item)
-        }
-        accItem.submenu = accSubmenu
-        self.accessoryMenuItem = accItem
-        menu.addItem(accItem)
-
         menu.addItem(NSMenuItem.separator())
 
         let settingsItem = NSMenuItem(title: "Impostazioni...", action: #selector(openSettingsAction), keyEquivalent: ",")
@@ -89,22 +75,6 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
             needsMenuItem?.title = "💖 Coccole: \(aff)% | 🥕 Sazietà: \(full)%"
         } else {
             needsMenuItem?.isHidden = true
-        }
-
-        // Segna con spunta l'accessorio attivo
-        if let sub = accessoryMenuItem?.submenu {
-            let current = PetSettings.shared.equippedAccessory
-            for item in sub.items {
-                if let acc = item.representedObject as? PetAccessory {
-                    item.state = (acc == current) ? .on : .off
-                }
-            }
-        }
-    }
-
-    @objc private func selectAccessoryAction(_ sender: NSMenuItem) {
-        if let acc = sender.representedObject as? PetAccessory {
-            PetSettings.shared.equippedAccessory = acc
         }
     }
 

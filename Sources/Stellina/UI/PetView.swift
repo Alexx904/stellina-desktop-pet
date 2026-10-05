@@ -15,14 +15,11 @@ public final class PetView: NSView, NSMenuDelegate {
     // Layer dedicati per separazione netta tra sprite del pet e overlay della mano
     private let spriteLayer = CALayer()
     private let headpatLayer = CALayer()
-    private let accessoryLayer = CATextLayer()
     private let needBadgeLayer = CATextLayer()
 
     private var isHeadpatActive: Bool = false
     private var sleepMenuItem: NSMenuItem?
     private var contextNeedsMenuItem: NSMenuItem?
-    private var contextAccessoryMenuItem: NSMenuItem?
-    private var fireflyTickCounter: Int = 0
     private var needCheckTickCounter: Int = 0
 
     public var onOpenSettingsRequested: (() -> Void)?
@@ -54,14 +51,6 @@ public final class PetView: NSView, NSMenuDelegate {
         spriteLayer.zPosition = 10
         rootLayer.addSublayer(spriteLayer)
 
-        // 2. Accessorio indossato: inserito come sublayer di spriteLayer così eredita stretch, bend e hop
-        accessoryLayer.contentsScale = scale
-        accessoryLayer.alignmentMode = .center
-        accessoryLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        accessoryLayer.zPosition = 35
-        accessoryLayer.opacity = 0.0
-        spriteLayer.addSublayer(accessoryLayer)
-
         // 3. Overlay mano pat-pat: sopra il pet, centrata sulla testa
         headpatLayer.contentsGravity = .resizeAspect
         headpatLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
@@ -78,16 +67,10 @@ public final class PetView: NSView, NSMenuDelegate {
         rootLayer.addSublayer(needBadgeLayer)
 
         updateSublayerLayout()
-        updateAccessory()
         updateNeedBadges()
     }
 
     private func setupListeners() {
-        PetSettings.shared.onAccessoryChanged = { [weak self] in
-            DispatchQueue.main.async {
-                self?.updateAccessory()
-            }
-        }
         PetSettings.shared.onGamificationChanged = { [weak self] in
             DispatchQueue.main.async {
                 self?.updateNeedBadges()
@@ -115,12 +98,6 @@ public final class PetView: NSView, NSMenuDelegate {
         // Stellina poggia sulla base (y = 0 in coordinate standard AppKit)
         spriteLayer.bounds = CGRect(x: 0, y: 0, width: w, height: h)
         spriteLayer.position = CGPoint(x: w / 2.0, y: 0.0)
-
-        // Accessorio sulla sommità della testa di Stellina
-        let accSize = w * 0.35
-        accessoryLayer.bounds = CGRect(x: 0, y: 0, width: accSize, height: accSize)
-        accessoryLayer.fontSize = accSize * 0.75
-        accessoryLayer.position = CGPoint(x: w * 0.5, y: h * 0.85)
 
         // Mano pat-pat posizionata sulla sommità della testa
         let handSize = w * 0.75
@@ -155,13 +132,6 @@ public final class PetView: NSView, NSMenuDelegate {
         guard let image = image else { return }
         spriteLayer.contents = image
 
-        // Controllo periodico lucciole notturne (sera da orario locale PC)
-        fireflyTickCounter += 1
-        if fireflyTickCounter >= 75 { // ogni ~2.5 secondi
-            fireflyTickCounter = 0
-            checkAndSpawnFirefly()
-        }
-
         // Controllo periodico aggiornamento badge bisogni
         needCheckTickCounter += 1
         if needCheckTickCounter >= 30 { // ogni ~1 secondo
@@ -193,19 +163,6 @@ public final class PetView: NSView, NSMenuDelegate {
         let carrotItem = NSMenuItem(title: "Lancia Carota 🥕", action: #selector(spawnCarrotAction), keyEquivalent: "c")
         carrotItem.target = self
         menu.addItem(carrotItem)
-
-        // Sottomenu Accessori
-        let accItem = NSMenuItem(title: "Accessorio sulla Testa", action: nil, keyEquivalent: "")
-        let accSubmenu = NSMenu()
-        for acc in PetAccessory.allCases {
-            let item = NSMenuItem(title: acc.displayName, action: #selector(selectAccessoryAction(_:)), keyEquivalent: "")
-            item.target = self
-            item.representedObject = acc
-            accSubmenu.addItem(item)
-        }
-        accItem.submenu = accSubmenu
-        self.contextAccessoryMenuItem = accItem
-        menu.addItem(accItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -240,21 +197,6 @@ public final class PetView: NSView, NSMenuDelegate {
             contextNeedsMenuItem?.title = "💖 Coccole: \(aff)% | 🥕 Sazietà: \(full)%"
         } else {
             contextNeedsMenuItem?.isHidden = true
-        }
-
-        if let sub = contextAccessoryMenuItem?.submenu {
-            let current = PetSettings.shared.equippedAccessory
-            for item in sub.items {
-                if let acc = item.representedObject as? PetAccessory {
-                    item.state = (acc == current) ? .on : .off
-                }
-            }
-        }
-    }
-
-    @objc private func selectAccessoryAction(_ sender: NSMenuItem) {
-        if let acc = sender.representedObject as? PetAccessory {
-            PetSettings.shared.equippedAccessory = acc
         }
     }
 
@@ -650,19 +592,6 @@ public final class PetView: NSView, NSMenuDelegate {
         }
     }
 
-    // MARK: - Accessori Equipaggiabili
-
-    public func updateAccessory() {
-        let acc = PetSettings.shared.equippedAccessory
-        if let emoji = acc.emoji {
-            accessoryLayer.string = emoji
-            accessoryLayer.opacity = 1.0
-        } else {
-            accessoryLayer.opacity = 0.0
-            accessoryLayer.string = ""
-        }
-    }
-
     // MARK: - Gamification & Badge Bisogni
 
     public func updateNeedBadges() {
@@ -727,71 +656,5 @@ public final class PetView: NSView, NSMenuDelegate {
         rumbleAnim.duration = 0.4
         rumbleAnim.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         spriteLayer.add(rumbleAnim, forKey: "tummyRumble")
-    }
-
-    // MARK: - Effetto Lucciole Notturne (Orario Serale PC)
-
-    private func checkAndSpawnFirefly() {
-        guard PetSettings.shared.nightFirefliesEnabled else { return }
-        let hour = Calendar.current.component(.hour, from: Date())
-        let isEveningOrNight = (hour >= 19 || hour < 7)
-        if isEveningOrNight {
-            spawnFireflyParticle()
-        }
-    }
-
-    private func spawnFireflyParticle() {
-        guard let root = self.layer else { return }
-
-        let fireflyLayer = CATextLayer()
-        let symbols = ["✨", "🟡", "🌟"]
-        fireflyLayer.string = symbols.randomElement() ?? "✨"
-        fireflyLayer.fontSize = CGFloat.random(in: 12...16)
-        fireflyLayer.alignmentMode = .center
-        fireflyLayer.zPosition = 90
-        fireflyLayer.opacity = 0.0
-
-        let startX = CGFloat.random(in: 10...(bounds.width - 20))
-        let startY = CGFloat.random(in: 10...(bounds.height * 0.5))
-        fireflyLayer.frame = CGRect(x: startX, y: startY, width: 22, height: 22)
-        root.addSublayer(fireflyLayer)
-
-        let duration: CFTimeInterval = Double.random(in: 2.2...3.5)
-
-        // Traiettoria fluttuante verso l'alto con oscillazione sinusoidale
-        let path = CGMutablePath()
-        path.move(to: CGPoint(x: startX, y: startY))
-        let driftX = CGFloat.random(in: -30...30)
-        let endY = startY + CGFloat.random(in: 45...85)
-        let control1 = CGPoint(x: startX + driftX, y: startY + 25)
-        let control2 = CGPoint(x: startX - (driftX * 0.5), y: startY + 50)
-        path.addCurve(to: CGPoint(x: startX + (driftX * 0.7), y: endY), control1: control1, control2: control2)
-
-        let positionAnim = CAKeyframeAnimation(keyPath: "position")
-        positionAnim.path = path
-        positionAnim.duration = duration
-        positionAnim.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-
-        let opacityAnim = CAKeyframeAnimation(keyPath: "opacity")
-        opacityAnim.values = [0.0, 0.85, 0.9, 0.4, 0.0]
-        opacityAnim.keyTimes = [0.0, 0.25, 0.5, 0.75, 1.0]
-        opacityAnim.duration = duration
-
-        let scaleAnim = CAKeyframeAnimation(keyPath: "transform.scale")
-        scaleAnim.values = [0.6, 1.1, 0.95, 1.0, 0.5]
-        scaleAnim.keyTimes = [0.0, 0.3, 0.6, 0.8, 1.0]
-        scaleAnim.duration = duration
-
-        let group = CAAnimationGroup()
-        group.animations = [positionAnim, opacityAnim, scaleAnim]
-        group.duration = duration
-        group.isRemovedOnCompletion = false
-        group.fillMode = .forwards
-
-        fireflyLayer.add(group, forKey: "fireflyFloat")
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-            fireflyLayer.removeFromSuperlayer()
-        }
     }
 }
