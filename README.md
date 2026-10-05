@@ -1,70 +1,116 @@
-# 🐾 Stellina - Desktop Pet per macOS
+# 🐾 Stellina — macOS Desktop Pet
 
-**Stellina** è un'adorabile applicazione desktop pet nativa per **macOS** (scritta in Swift con AppKit + SwiftUI), fluida a 60 FPS e con un consumo di risorse praticamente nullo (< 0.5% CPU).
+<p align="center">
+  <img src="Assets Stellina/Idle.png" alt="Stellina Desktop Pet" width="160" />
+</p>
 
----
+<p align="center">
+  <strong>Un compagno virtuale nativo per macOS leggero, interattivo e animato a 60 FPS.</strong><br>
+  Sviluppato in <em>Swift</em>, <em>AppKit</em> e <em>SwiftUI</em>, con simulazione fisica in tempo reale, interazioni tattili e consumo di risorse CPU quasi nullo (< 0.5%).
+</p>
 
-## 🌟 Funzionalità
-
-- **Finestra Trasparente & Floating**: Stellina vive sul tuo desktop sopra tutte le altre finestre senza cornici o sfondi opachi, e ti accompagna anche a schermo intero.
-- **Fisica & Gravità Elastica (Cartoon Squish & Stretch)**:
-  - Cade dall'alto e atterra sul pavimento dello schermo con un rimbalzo morbido (*squish*).
-  - Quando la trascini in aria si allunga verso l'alto (*stretch*) come un gattino.
-- **💖 Coccole & Pat-Pat Interattivo**:
-  - Sfiora velocemente il mouse avanti e indietro sopra Stellina per farle le carezze: compare la mano animata che la accarezza (`headpat-hand.gif`), Stellina si piega e comprime dolcemente ad ogni tocco (*squish & bend*), fa le fusa e sprigiona una pioggia di **cuoricini ❤️ fluttuanti**!
-  - Disponibile anche con clic destro -> *"Fai le Coccole 💖"*.
-- **💤 Modalità Sonno Naturale (Sleep Mode)**:
-  - Se lasci Stellina indisturbata per qualche minuto, si accoccola ed entra nel mondo dei sogni con le bollicine **`Zzz`** 💤.
-  - Passa il cursore su di lei per svegliarla con un allegro saltino di bentornato!
-- **🔊 Effetti Sonori Dolci & Rilassanti**:
-  - Feedback audio per carezze/fusa, atterraggio, sollevamento e risveglio.
-  - Switch Muto e regolazione volume disponibili nel menu rapido e nelle impostazioni.
-- **Drag & Drop Diretto**: Puoi prenderla con il mouse e spostarla ovunque; rilasciandola cadrà di nuovo per gravità.
-- **Accessory App su macOS (Zero Dock Bloat)**: Vive discreta nella **Barra dei Menu** in alto con l'icona zampetta 🐾.
-- **Interfaccia Impostazioni Dedicata (SwiftUI)**:
-  - **Sprite & Aspetto**: personalizzazione degli sprite di movimento con selezione file dal Finder e pulsante *Ripristina Default*.
-  - **Fisica & Movimento**: regolazione di dimensione (px), velocità di camminata, intensità di gravità e frequenza fotogrammi.
-  - **Interazioni & Audio**: toggle effetti sonori, volume, abilitazione carezze e tempo di inattività sonno.
-  - **Hot Reload**: ogni modifica ha effetto istantaneo senza dover riavviare l'applicazione!
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-macOS%2012.0+-black?logo=apple&style=flat-square" alt="macOS 12+" />
+  <img src="https://img.shields.io/badge/Swift-5.9+-orange?logo=swift&style=flat-square" alt="Swift 5.9+" />
+  <img src="https://img.shields.io/badge/Architecture-Universal%20(Apple%20Silicon%20%2F%20Intel)-blue?style=flat-square" alt="Universal Binary" />
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" />
+</p>
 
 ---
 
-## 📂 Struttura del Progetto
+## 🌟 Caratteristiche Principali
+
+### 🐰 Fisica Desktop & Deformazioni Procedurali
+- **Finestra Flottante e Trasparente**: Stellina vive sul desktop al di sopra di qualsiasi finestra, senza sfondi opachi né bordi visibili, supportando nativamente gli Spaces e le app a schermo intero (`NSPanel` flottante).
+- **Simulazione Gravitazionale**: Cade dolcemente con accelerazione continua, rimbalzando all'impatto con la base dello schermo (*squish & bounce* dinamico).
+- **Deformazione Elastica (Squish & Stretch)**: Quando viene afferrata e trascinata col mouse, si allunga verticalmente assecondando il movimento; rilasciandola, riacquista la forma originale e precipita per gravità.
+
+### 🥕 Sistema Interattivo Carota & Nutrizione
+- **Carota Flottante con Fisica Reale**: Le carote (`🥕`) compaiono sullo schermo con la stessa identica fisica del coniglietto (caduta gravitazionale, rimbalzo a terra e confini desktop).
+- **Drag & Drop Diretto**: Puoi afferrare le carote e trascinarle ovunque sulla scrivania.
+- **Meccanica di Nutrizione**:
+  - Trascina una carota verso Stellina per fargliela mangiare!
+  - **Animazione Cartoon di Masticazione**: Stellina esegue rapidi movimenti di sgranocchiamento cartoon (*munching bounce*).
+  - **Effetti Particellari (VFX)**: Pioggia di briciole arancioni, cuoricini e stelline (`🥕`, `🔸`, `✨`, `🧡`).
+  - **Effetti Sonori (SFX)**: Sequenza ritmica e croccante di morsi (*crunch*). Se Stellina stava dormendo, si sveglia istantaneamente contenta.
+- **Generazione Rapida**: Lancia una carota in qualsiasi momento con il tasto destro (`Lancia Carota 🥕`) o lascia che appaia periodicamente.
+
+### 💖 Coccole & Affetto (Pat-Pat)
+- **Carezze Naturali con il Mouse**: Muovendo rapidamente il cursore a destra e sinistra sopra la testa di Stellina:
+  - Appare una mano animata in sovrimpressione (`headpat-hand.gif`).
+  - Stellina reagisce con una deformazione ritmica sincrona di schiacciamento e flessione (*squish & bend*).
+  - Emette fusa e un tripudio di **cuoricini fluttuanti ❤️** che evaporano dolcemente.
+- **Attivazione Rapida**: Disponibile anche tramite clic destro -> *"Fai le Coccole 💖"*.
+
+### 💤 Sonno Naturale & Messa a Riposo Manuale
+- **Addormentamento Naturale**: Se non interagisci con Stellina per un tempo configurabile (default: 2 minuti), si accoccola ed entra in sonno profondo, emettendo periodicamente bolle **`Zzz`** 💤.
+- **Controllo Diretto del Sonno**: Metti a dormire o sveglia Stellina a comando dal menu del tasto destro (*"Metti a Dormire 💤"* / *"Sveglia Stellina ☀️"*).
+- **Risveglio Dolce**: Sfiora il mouse su di lei per vederla balzare in piedi con un saltino felice.
+
+### 🐾 Zero Invasività (Accessory App)
+- Nessuna icona ingombrante nel Dock: Stellina risiede in modo pulito nella **Barra dei Menu** di macOS con l'icona zampetta (`🐾`).
+- Menu contestuale accessibile sia con clic destro sul pet sia dall'icona nella barra di stato.
+
+### ⚙️ Pannello Impostazioni Moderno (SwiftUI)
+- **Sprite & Personalizzazione**: Carica asset personalizzati dal Finder per ogni stato (`Idle`, `Walk`, `Fall`, `Sleep`) con supporto al ripristino istantaneo.
+- **Fisica & Dinamica**: Regola dimensioni della finestra (px), velocità di camminata, forza di gravità e velocità di animazione.
+- **Audio & Interazioni**: Controllo del volume, abilitazione/disabilitazione suoni, test audio per fusa e sgranocchiamento carota, soglia di inattività per il sonno e pulsante rapido per lanciare carote.
+- **Hot-Reload Istantaneo**: Ogni impostazione si aggiorna a caldo senza dover riavviare l'applicazione.
+
+---
+
+## 🎮 Controlli Rapidi
+
+| Gesto / Azione | Effetto |
+| :--- | :--- |
+| **Trascina Pet (Click Sinistro)** | Sposta Stellina sulla scrivania (allungamento elastico); al rilascio cade. |
+| **Passa il mouse avanti/indietro** | Fai le coccole a Stellina (mano animata, fusa, cuoricini). |
+| **Trascina Carota verso Stellina** | Stellina mangia la carota con animazione di masticazione, briciole e suono crunch. |
+| **Tasto Destro su Stellina** | Apre il menu contestuale: coccole, sonno/risveglio, lancia carota, impostazioni, riposiziona. |
+| **Icona Zampetta (Barra Menu) 🐾** | Accesso rapido alle impostazioni, controllo sonno, carote e chiusura app. |
+| **Passa il mouse sul pet addormentato** | Sveglia Stellina con un saltino. |
+
+---
+
+## 📂 Architettura del Progetto
+
+Il progetto segue un'architettura modulare e pulita senza dipendenze esterne:
 
 ```
 stellina-desktop-pet/
-├── Assets Stellina/                      # Sprite grafici di default e GIF
-│   ├── Fall.png
-│   ├── Idle.png
-│   ├── left1.png
-│   ├── left2.png
-│   ├── right1.png
-│   ├── right2.png
-│   ├── Sleep.png
-│   └── headpat-hand.gif
-├── Package.swift                         # Configurazione Swift Package Manager
-├── Makefile                              # Scorciatoie per compilazione macOS
+├── Assets Stellina/                      # Asset grafici di default e animazioni GIF
+│   ├── Fall.png                          # Sprite caduta / trascinamento
+│   ├── Idle.png                          # Sprite di riposo a terra
+│   ├── left1.png / left2.png             # Fotogrammi camminata verso sinistra
+│   ├── right1.png / right2.png           # Fotogrammi camminata verso destra
+│   ├── Sleep.png                         # Sprite sonno
+│   └── headpat-hand.gif                  # Overlay animato per le carezze
+├── Package.swift                         # Configurazione Swift Package Manager (macOS 12+)
+├── Makefile                              # Target per compilazione, esecuzione e packaging
 ├── scripts/
-│   └── build_app.sh                      # Script di generazione bundle macOS .app
+│   └── build_app.sh                      # Generazione del bundle autonomo .app (Universal Binary)
 ├── Resources/
-│   ├── Info.plist                        # Configurazione bundle macOS
-│   └── Stellina.entitlements             # Permessi sandbox
+│   ├── Info.plist                        # Configurazione bundle (LSUIElement / Accessory)
+│   └── Stellina.entitlements             # Diritti sandbox e hardened runtime
 └── Sources/
-    └── Stellina/                         # Codice sorgente nativo macOS (Swift)
+    └── Stellina/                         # Sorgenti Swift
         ├── main.swift                    # Entry point NSApplication
-        ├── AppDelegate.swift             # Ciclo di vita applicativo
+        ├── AppDelegate.swift             # Orchestrazione ciclo di vita e simulation loop (~30 FPS)
         ├── Core/
-        │   ├── PetState.swift            # Macchina a stati
-        │   ├── PetSettings.swift         # Persistenza preferenze (UserDefaults) e hot reload
-        │   ├── PhysicsSystem.swift       # Motore gravità e piano terra
-        │   ├── BehaviorSystem.swift      # Timer decisionale, inattività e suoni
-        │   ├── SoundManager.swift        # Gestione audio ed effetti sonori nativi
-        │   └── AssetManager.swift        # Caricamento e cache intelligente da bundle o file custom
+        │   ├── PetState.swift            # Macchina a stati finiti (idle, walk, fall, sleep, ecc.)
+        │   ├── BehaviorSystem.swift      # Decision engine comportamentale, coccole e sonno
+        │   ├── PhysicsSystem.swift       # Fisica newtoniana, gravità e collisioni coi bordi
+        │   ├── CarrotManager.swift       # Gestore ciclo vitale, collisioni e feeding carote
+        │   ├── SoundManager.swift        # Riproduzione ed effetti sonori nativi (NSSound)
+        │   ├── AssetManager.swift        # Caching intelligente sprite e decodifica fotogrammi GIF
+        │   └── PetSettings.swift         # Persistenza reattiva UserDefaults con Combine
         └── UI/
-            ├── PetWindow.swift           # NSPanel borderless trasparente flottante
-            ├── PetView.swift             # Rendering CALayer, gesture pat-pat, deformazione e GIF overlay
-            ├── StatusBarController.swift # Icona zampetta 🐾 nella barra di stato
-            └── Settings/
+            ├── PetWindow.swift           # NSPanel borderless trasparente a livello floating
+            ├── PetView.swift             # Rendering CALayer, deformazioni squish/bend, menu e VFX
+            ├── CarrotWindow.swift        # NSPanel autonomo trasparente per ogni carota
+            ├── CarrotView.swift          # Vista carota con drag & drop nativo e landing squish
+            ├── StatusBarController.swift # Menu item nella barra di stato di sistema (🐾)
+            └── Settings/                 # Interfaccia preferenze SwiftUI
                 ├── SettingsWindowController.swift
                 ├── SettingsView.swift
                 ├── SpriteSettingsView.swift
@@ -74,19 +120,52 @@ stellina-desktop-pet/
 
 ---
 
-## 🚀 Compilazione ed Esecuzione
+## 🛠️ Compilazione ed Esecuzione
 
-### 🍎 Requisiti
-- macOS 12.0 (Monterey) o successivo
-- Xcode 14+ / Swift 5.9+
+### Requisiti
+- **macOS 12.0 (Monterey)** o versione successiva
+- **Xcode 14.0+** con **Swift 5.9+** (oppure Command Line Tools per Xcode)
+
+### Comandi Rapidi (Makefile)
 
 ```bash
-# Compilazione e avvio rapido in sviluppo
+# Compila ed esegue direttamente per lo sviluppo locale:
 make run
 
-# Generazione applicazione autonoma Stellina.app
-make package
-# oppure: ./scripts/build_app.sh
-```
-Il bundle standalone verrà generato in `build/Stellina.app`. Per eseguirlo basta aprirlo con `open build/Stellina.app`.
+# Compila la release:
+make build
 
+# Confeziona il pacchetto finale Stellina.app:
+make package
+
+# Pulisce la directory di build:
+make clean
+```
+
+### Creazione del Bundle Standalone (`.app`)
+
+Lo script [`scripts/build_app.sh`](scripts/build_app.sh) compila un **Universal Binary** nativo per entrambe le architetture Apple Silicon (`arm64`) e Intel (`x86_64`), assembla la cartella `Contents`, include le risorse e applica la firma ad-hoc:
+
+```bash
+bash scripts/build_app.sh
+```
+
+Il file risultante si troverà in `build/Stellina.app`. Per avviarlo immediatamente:
+```bash
+open build/Stellina.app
+```
+
+---
+
+## 🔒 Prestazioni & Riservatezza
+
+- **Zero Bloat**: Nessun framework o libreria di terze parti; utilizza esclusivamente le API native Apple (`AppKit`, `SwiftUI`, `QuartzCore`, `Combine`).
+- **Efficienza Energetica**: La simulazione gira con un timer ad intervalli calibrati (~30 FPS) e accelerazione grafica via `CALayer`, garantendo un impatto termico ed energetico trascurabile su MacBook.
+- **Privacy al 100%**: Nessuna connessione di rete, telemetria o raccolta dati. Tutto viene eseguito e memorizzato esclusivamente in locale tramite `UserDefaults`.
+
+---
+
+## 📄 Licenza
+
+Questo progetto è rilasciato sotto licenza [MIT](LICENSE).
+Sviluppato con passione per rendere la scrivania del tuo Mac un posto più vivace e accogliente! 💖
