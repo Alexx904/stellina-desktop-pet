@@ -3,6 +3,8 @@ import AppKit
 public final class StatusBarController: NSObject, NSMenuDelegate {
     private var statusItem: NSStatusItem?
     private var sleepMenuItem: NSMenuItem?
+    private var needsMenuItem: NSMenuItem?
+    private var accessoryMenuItem: NSMenuItem?
     public var onOpenSettingsRequested: (() -> Void)?
 
     override public init() {
@@ -25,6 +27,11 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
         appTitle.isEnabled = false
         menu.addItem(appTitle)
 
+        let needsItem = NSMenuItem(title: "💖 Coccole: 100% | 🥕 Sazietà: 100%", action: nil, keyEquivalent: "")
+        needsItem.isEnabled = false
+        self.needsMenuItem = needsItem
+        menu.addItem(needsItem)
+
         menu.addItem(NSMenuItem.separator())
 
         let sleepItem = NSMenuItem(title: "Metti a Dormire 💤", action: #selector(toggleSleepAction), keyEquivalent: "s")
@@ -35,6 +42,19 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
         let carrotItem = NSMenuItem(title: "Lancia Carota 🥕", action: #selector(spawnCarrotAction), keyEquivalent: "c")
         carrotItem.target = self
         menu.addItem(carrotItem)
+
+        // Sottomenu Accessori
+        let accItem = NSMenuItem(title: "Accessorio sulla Testa", action: nil, keyEquivalent: "")
+        let accSubmenu = NSMenu()
+        for acc in PetAccessory.allCases {
+            let item = NSMenuItem(title: acc.displayName, action: #selector(selectAccessoryAction(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = acc
+            accSubmenu.addItem(item)
+        }
+        accItem.submenu = accSubmenu
+        self.accessoryMenuItem = accItem
+        menu.addItem(accItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -60,6 +80,31 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
             sleepMenuItem?.title = "Sveglia Stellina ☀️"
         } else {
             sleepMenuItem?.title = "Metti a Dormire 💤"
+        }
+
+        if PetSettings.shared.gamificationEnabled {
+            needsMenuItem?.isHidden = false
+            let aff = Int(PetNeedsManager.shared.affection)
+            let full = Int(PetNeedsManager.shared.fullness)
+            needsMenuItem?.title = "💖 Coccole: \(aff)% | 🥕 Sazietà: \(full)%"
+        } else {
+            needsMenuItem?.isHidden = true
+        }
+
+        // Segna con spunta l'accessorio attivo
+        if let sub = accessoryMenuItem?.submenu {
+            let current = PetSettings.shared.equippedAccessory
+            for item in sub.items {
+                if let acc = item.representedObject as? PetAccessory {
+                    item.state = (acc == current) ? .on : .off
+                }
+            }
+        }
+    }
+
+    @objc private func selectAccessoryAction(_ sender: NSMenuItem) {
+        if let acc = sender.representedObject as? PetAccessory {
+            PetSettings.shared.equippedAccessory = acc
         }
     }
 

@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Un compagno virtuale nativo per macOS leggero, interattivo e animato a 60 FPS.</strong><br>
-  Sviluppato in <em>Swift</em>, <em>AppKit</em> e <em>SwiftUI</em>, con simulazione fisica in tempo reale, interazioni tattili e consumo di risorse CPU quasi nullo (< 0.5%).
+  Sviluppato in <em>Swift</em>, <em>AppKit</em> e <em>SwiftUI</em>, con simulazione fisica in tempo reale, gamification, inseguimento carote, interazioni tattili e consumo di risorse CPU quasi nullo (< 0.5%).
 </p>
 
 <p align="center">
@@ -25,37 +25,87 @@
 - **Simulazione Gravitazionale**: Cade dolcemente con accelerazione continua, rimbalzando all'impatto con la base dello schermo (*squish & bounce* dinamico).
 - **Deformazione Elastica (Squish & Stretch)**: Quando viene afferrata e trascinata col mouse, si allunga verticalmente assecondando il movimento; rilasciandola, riacquista la forma originale e precipita per gravità.
 
-### 🥕 Sistema Interattivo Carota & Nutrizione
-- **Carota Flottante con Fisica Reale**: Le carote (`🥕`) compaiono sullo schermo con la stessa identica fisica del coniglietto (caduta gravitazionale, rimbalzo a terra e confini desktop).
-- **Drag & Drop Diretto**: Puoi afferrare le carote e trascinarle ovunque sulla scrivania.
-- **Meccanica di Nutrizione**:
-  - Trascina una carota verso Stellina per fargliela mangiare!
-  - **Animazione Cartoon di Masticazione**: Stellina esegue rapidi movimenti di sgranocchiamento cartoon (*munching bounce*).
-  - **Effetti Particellari (VFX)**: Pioggia di briciole arancioni, cuoricini e stelline (`🥕`, `🔸`, `✨`, `🧡`).
-  - **Effetti Sonori (SFX)**: Sequenza ritmica e croccante di morsi (*crunch*). Se Stellina stava dormendo, si sveglia istantaneamente contenta.
-- **Generazione Rapida**: Lancia una carota in qualsiasi momento con il tasto destro (`Lancia Carota 🥕`) o lascia che appaia periodicamente.
+---
+
+### 🥕 Inseguimento Carota in Mano (Carrot Follower AI) & Nutrizione
+- **Inseguimento Dinamico**: Quando afferri una carota con il cursore del mouse, Stellina si sveglia (se stava dormendo), si gira verso la carota e **la insegue a passo svelto** camminando sul desktop!
+- **Saltelli Gioiosi di Attesa**: Se tieni la carota ferma sopra di lei, si posiziona esattamente sotto il cibo ed esegue piccoli saltelli di anticipazione (`hop`).
+- **Drag & Drop e Masticazione**:
+  - Trascina la carota verso il coniglietto o lasciala cadere vicino a lui per fargliela sgranocchiare.
+  - **Animazione Cartoon di Masticazione**: Movimenti rapidi di sgranocchiamento (*munching bounce*).
+  - **Effetti Particellari (VFX)**: Briciole arancioni, cuoricini e stelline (`🥕`, `🔸`, `✨`, `🧡`).
+  - **Effetti Sonori (SFX)**: Sequenza ritmica e croccante di morsi (*crunch*).
+
+---
+
+### 💖 Gamification & Sistema Bisogni (Tamagotchi Engine)
+- **Barre di Benessere in Tempo Reale**:
+  - 💖 **Coccole / Affetto** (`0–100%`): ricaricabile accarezzandola col mouse o tramite menu rapido.
+  - 🥕 **Sazietà / Nutrizione** (`0–100%`): ricaricabile dandole da mangiare le carote.
+- **Decadimento Naturale nel Tempo**: le statistiche scendono gradualmente a ritmo configurabile dalle impostazioni.
+- **Badge Emoji e Reazioni Procedurali (< 25%)**:
+  - **Coccole Basse (< 25%)**: appare un badge fluttuante con emoji **🥺** (oppure **🥺🥕** se mancano entrambi) che rimbalza dolcemente sopra la testolina.
+  - **Fame Bassa (< 25%)**: appare il badge **🤤** e il pancino di Stellina borbotta visibilmente con un simpatico scuotimento orizzontale (`tummyRumble`).
+- **Completamente Disattivabile**: Puoi disattivare la gamification in qualsiasi momento dalle impostazioni; i badge spariranno all'istante e Stellina tornerà in modalità sandbox.
+
+---
+
+### 🎀 Accessori Equipaggiabili sulla Testa
+- Personalizza il look di Stellina con graziosi accessori ancorati alla testolina:
+  - **Nessuno**
+  - **Fiocchetto Rosa 🎀**
+  - **Fiorellino 🌸**
+  - **Cappellino da Festa 🥳**
+  - **Corona Reale 👑**
+  - **Stellina Dorata ⭐**
+- Gli accessori ereditano in tempo reale tutte le trasformazioni del pet (allungamento elastico, schiacciamento, salti e camminata).
+- Selezionabili comodamente dal tab *Bisogni & Accessori* delle Impostazioni, dal menu contestuale del pet o dall'icona nella StatusBar.
+
+---
+
+### 🐰 Curious Ear Tilt (Inclinazione Curiosa delle Orecchie)
+- Quando muovi il cursore del mouse nelle vicinanze di Stellina, la testolina e le orecchie si inclinano dolcemente verso la direzione del puntatore, guardandolo incuriosite, per poi ritornare elastiche al centro.
+
+---
+
+### ✨ Effetto Lucciole Notturne (Orario Serale PC)
+- **Rilevamento Orario di Sistema**: Dalle **19:30 alle 07:00** del mattino (in base all'orologio del tuo Mac), graziose lucciole luminescenti (✨, 🟡, 🌟) fluttuano morbidamente con traiettorie sinusoidali attorno a Stellina, creando un'atmosfera magica e rilassante mentre riposa o passeggia.
+
+---
 
 ### 💖 Coccole & Affetto (Pat-Pat)
 - **Carezze Naturali con il Mouse**: Muovendo rapidamente il cursore a destra e sinistra sopra la testa di Stellina:
   - Appare una mano animata in sovrimpressione (`headpat-hand.gif`).
   - Stellina reagisce con una deformazione ritmica sincrona di schiacciamento e flessione (*squish & bend*).
   - Emette fusa e un tripudio di **cuoricini fluttuanti ❤️** che evaporano dolcemente.
-- **Attivazione Rapida**: Disponibile anche tramite clic destro -> *"Fai le Coccole 💖"*.
+- Ricarica istantaneamente l'indicatore di Affetto della gamification!
+
+---
 
 ### 💤 Sonno Naturale & Messa a Riposo Manuale
 - **Addormentamento Naturale**: Se non interagisci con Stellina per un tempo configurabile (default: 2 minuti), si accoccola ed entra in sonno profondo, emettendo periodicamente bolle **`Zzz`** 💤.
 - **Controllo Diretto del Sonno**: Metti a dormire o sveglia Stellina a comando dal menu del tasto destro (*"Metti a Dormire 💤"* / *"Sveglia Stellina ☀️"*).
 - **Risveglio Dolce**: Sfiora il mouse su di lei per vederla balzare in piedi con un saltino felice.
 
+---
+
 ### 🐾 Zero Invasività (Accessory App)
 - Nessuna icona ingombrante nel Dock: Stellina risiede in modo pulito nella **Barra dei Menu** di macOS con l'icona zampetta (`🐾`).
-- Menu contestuale accessibile sia con clic destro sul pet sia dall'icona nella barra di stato.
+- Indicatore live dello stato dei bisogni: `💖 Coccole: 85% | 🥕 Sazietà: 60%`.
+- Sottomenu rapido con spunta grafica per cambiare accessori al volo.
+
+---
 
 ### ⚙️ Pannello Impostazioni Moderno (SwiftUI)
-- **Sprite & Personalizzazione**: Carica asset personalizzati dal Finder per ogni stato (`Idle`, `Walk`, `Fall`, `Sleep`) con supporto al ripristino istantaneo.
-- **Fisica & Dinamica**: Regola dimensioni della finestra (px), velocità di camminata, forza di gravità e velocità di animazione.
-- **Audio & Interazioni**: Controllo del volume, abilitazione/disabilitazione suoni, test audio per fusa e sgranocchiamento carota, soglia di inattività per il sonno e pulsante rapido per lanciare carote.
-- **Hot-Reload Istantaneo**: Ogni impostazione si aggiorna a caldo senza dover riavviare l'applicazione.
+- **Sprite & Aspetto**: Carica sprite personalizzati dal Finder per ogni stato (`Idle`, `Walk`, `Fall`, `Sleep`).
+- **Fisica & Movimento**: Regola dimensioni finestra (px), velocità di camminata, gravità e velocità animazione.
+- **Interazioni & Audio**: Volume suoni, toggle audio fusa/cibo, soglia di inattività per il sonno e pulsante lancia carota.
+- **Bisogni & Accessori**:
+  - Barre di progresso per Coccole e Fame.
+  - Velocità di decadimento configurabili in minuti.
+  - Selettore accessori con preview.
+  - Toggle per *Curious Ear Tilt* e *Lucciole Notturne Serali*.
+- **Hot-Reload Istantaneo**: Ogni impostazione si aggiorna in tempo reale senza riavvii.
 
 ---
 
@@ -64,10 +114,12 @@
 | Gesto / Azione | Effetto |
 | :--- | :--- |
 | **Trascina Pet (Click Sinistro)** | Sposta Stellina sulla scrivania (allungamento elastico); al rilascio cade. |
-| **Passa il mouse avanti/indietro** | Fai le coccole a Stellina (mano animata, fusa, cuoricini). |
-| **Trascina Carota verso Stellina** | Stellina mangia la carota con animazione di masticazione, briciole e suono crunch. |
-| **Tasto Destro su Stellina** | Apre il menu contestuale: coccole, sonno/risveglio, lancia carota, impostazioni, riposiziona. |
-| **Icona Zampetta (Barra Menu) 🐾** | Accesso rapido alle impostazioni, controllo sonno, carote e chiusura app. |
+| **Trascina una Carota con il mouse** | Stellina si sveglia e **insegue la carota** a passo svelto; fermandosi sotto di essa fa salti d'attesa (`hop`). |
+| **Trascina Carota verso Stellina** | Stellina mangia la carota, ricarica la sazietà, fa briciole e suoni crunch. |
+| **Passa il mouse avanti/indietro sulla testa** | Fai le coccole a Stellina (mano animata, fusa, cuoricini, ricarica affetto). |
+| **Muovi il mouse vicino a Stellina** | Inclinazione curiosa della testolina (*Curious Ear Tilt*). |
+| **Tasto Destro su Stellina** | Mostra stato bisogni, menu coccole, sonno, carota, sottomenu accessori e impostazioni. |
+| **Icona Zampetta (Barra Menu) 🐾** | Visualizza percentuali `💖 / 🥕`, selettore accessori rapido, controllo sonno e impostazioni. |
 | **Passa il mouse sul pet addormentato** | Sveglia Stellina con un saltino. |
 
 ---
@@ -98,24 +150,26 @@ stellina-desktop-pet/
         ├── AppDelegate.swift             # Orchestrazione ciclo di vita e simulation loop (~30 FPS)
         ├── Core/
         │   ├── PetState.swift            # Macchina a stati finiti (idle, walk, fall, sleep, ecc.)
-        │   ├── BehaviorSystem.swift      # Decision engine comportamentale, coccole e sonno
+        │   ├── BehaviorSystem.swift      # Decision engine comportamentale, carrot follow, coccole e sonno
         │   ├── PhysicsSystem.swift       # Fisica newtoniana, gravità e collisioni coi bordi
-        │   ├── CarrotManager.swift       # Gestore ciclo vitale, collisioni e feeding carote
+        │   ├── CarrotManager.swift       # Gestore carote, coordinate carota in mano e alimentazione
+        │   ├── PetNeedsManager.swift     # Engine di gamification (coccole, fame, decadimento e soglie)
         │   ├── SoundManager.swift        # Riproduzione ed effetti sonori nativi (NSSound)
-        │   ├── AssetManager.swift        # Caching intelligente sprite e decodifica fotogrammi GIF
-        │   └── PetSettings.swift         # Persistenza reattiva UserDefaults con Combine
+        │   ├── AssetManager.swift        # Caching intelligente sprite e decodifica GIF
+        │   └── PetSettings.swift         # Persistenza reattiva UserDefaults con Combine ed enum accessori
         └── UI/
             ├── PetWindow.swift           # NSPanel borderless trasparente a livello floating
-            ├── PetView.swift             # Rendering CALayer, deformazioni squish/bend, menu e VFX
+            ├── PetView.swift             # Rendering CALayer, badge bisogni, accessori, tilt, lucciole e VFX
             ├── CarrotWindow.swift        # NSPanel autonomo trasparente per ogni carota
             ├── CarrotView.swift          # Vista carota con drag & drop nativo e landing squish
-            ├── StatusBarController.swift # Menu item nella barra di stato di sistema (🐾)
+            ├── StatusBarController.swift # Menu item nella barra di stato con livelli bisogni e accessori (🐾)
             └── Settings/                 # Interfaccia preferenze SwiftUI
                 ├── SettingsWindowController.swift
                 ├── SettingsView.swift
                 ├── SpriteSettingsView.swift
                 ├── PhysicsSettingsView.swift
-                └── InteractionsSettingsView.swift
+                ├── InteractionsSettingsView.swift
+                └── GamificationSettingsView.swift # Tab SwiftUI per bisogni, accessori e feature cute
 ```
 
 ---
@@ -167,5 +221,5 @@ open build/Stellina.app
 
 ## 📄 Licenza
 
-Questo progetto è rilasciato sotto licenza [MIT](LICENSE).
+Questo progetto è rilasciato sotto licenza [MIT](LICENSE).  
 Sviluppato con passione per rendere la scrivania del tuo Mac un posto più vivace e accogliente! 💖

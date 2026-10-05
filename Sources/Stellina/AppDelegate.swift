@@ -101,6 +101,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             if let petFrame = self.petWindow?.frame {
                 CarrotManager.shared.tick(petFrame: petFrame)
             }
+            PetNeedsManager.shared.tick(deltaTime: 0.033)
         }
         RunLoop.main.add(timer, forMode: .common)
         self.simulationTimer = timer

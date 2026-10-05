@@ -32,6 +32,7 @@ public final class BehaviorSystem {
     private var sleepZzzTickCounter: Int = 0
     private var animIndex: Int = 0
     private var animTickCounter: Int = 0
+    private var carrotHopTickCounter: Int = 0
 
     public var onFrameUpdate: ((NSImage?, CGPoint) -> Void)?
     public var onLanded: (() -> Void)?
@@ -52,6 +53,7 @@ public final class BehaviorSystem {
     public func pet() {
         guard settings.petPatEnabled else { return }
         resetInactivity()
+        PetNeedsManager.shared.pet()
         if currentState == .sleeping {
             wakeUp()
             return
@@ -95,6 +97,7 @@ public final class BehaviorSystem {
 
     public func feed() {
         resetInactivity()
+        PetNeedsManager.shared.feed()
         if currentState == .sleeping {
             currentState = .idle
         }
@@ -166,6 +169,41 @@ public final class BehaviorSystem {
                         currentState = .idle
                         walkTicksRemaining = Int.random(in: 50...100)
                         onPetPatEnded?()
+                    }
+                } else if let carrotPt = CarrotManager.shared.heldCarrotCenter {
+                    // Se c'è una carota tenuta in mano dall'utente:
+                    if currentState == .sleeping {
+                        wakeUp()
+                    }
+                    resetInactivity()
+
+                    if currentState != .sleeping && currentState != .petted {
+                        let petCenterX = posX + (size / 2.0)
+                        let diffX = Double(carrotPt.x) - petCenterX
+
+                        if abs(diffX) > 28.0 {
+                            // Segue la carota camminando con passo svelto
+                            let targetState: PetState = diffX > 0 ? .walkRight : .walkLeft
+                            currentState = targetState
+                            let speed = settings.walkSpeed * 1.25
+                            posX += (diffX > 0 ? 1.0 : -1.0) * speed
+
+                            physics.handleHorizontalBounds(
+                                posX: &posX,
+                                windowWidth: size,
+                                currentState: &currentState
+                            )
+                            walkTicksRemaining = 15
+                        } else {
+                            // Arrivata esattamente sotto la carota: si ferma e fa salti gioiosi
+                            currentState = .idle
+                            walkTicksRemaining = 0
+                            carrotHopTickCounter += 1
+                            if carrotHopTickCounter >= 40 {
+                                carrotHopTickCounter = 0
+                                onWakeUpTriggered?()
+                            }
+                        }
                     }
                 } else if currentState == .sleeping {
                     // Emette l'effetto grafico Zzz periodicamente (~1 volta al secondo)

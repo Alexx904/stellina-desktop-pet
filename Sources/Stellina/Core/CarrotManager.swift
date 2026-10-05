@@ -37,6 +37,18 @@ public final class CarrotManager {
 
     public var onFeedPet: (() -> Void)?
 
+    /// Restituisce la carota attualmente afferrata e trascinata dal cursore dell'utente
+    public var currentlyHeldCarrot: CarrotItem? {
+        return activeCarrots.first(where: { $0.view.isDragging && !$0.isBeingEaten })
+    }
+
+    /// Restituisce il punto centrale globale della carota trascinata, se presente
+    public var heldCarrotCenter: CGPoint? {
+        guard let item = currentlyHeldCarrot else { return nil }
+        let frame = item.window.frame
+        return CGPoint(x: frame.midX, y: frame.midY)
+    }
+
     private init() {}
 
     public func spawnCarrot(at customPoint: NSPoint? = nil) {
@@ -161,6 +173,7 @@ public final class CarrotManager {
         }
 
         BehaviorSystem.shared.feed()
+        PetNeedsManager.shared.feed()
         onFeedPet?()
     }
 

@@ -1,6 +1,39 @@
 import Foundation
 import Combine
 
+public enum PetAccessory: String, CaseIterable, Identifiable, Codable {
+    case none = "none"
+    case pinkBow = "pinkBow"
+    case flower = "flower"
+    case partyHat = "partyHat"
+    case crown = "crown"
+    case star = "star"
+
+    public var id: String { rawValue }
+
+    public var displayName: String {
+        switch self {
+        case .none: return "Nessuno"
+        case .pinkBow: return "Fiocchetto Rosa 🎀"
+        case .flower: return "Fiorellino 🌸"
+        case .partyHat: return "Cappellino Festa 🥳"
+        case .crown: return "Corona Reale 👑"
+        case .star: return "Stellina Dorata ⭐"
+        }
+    }
+
+    public var emoji: String? {
+        switch self {
+        case .none: return nil
+        case .pinkBow: return "🎀"
+        case .flower: return "🌸"
+        case .partyHat: return "🥳"
+        case .crown: return "👑"
+        case .star: return "⭐"
+        }
+    }
+}
+
 public final class PetSettings: ObservableObject {
     public static let shared = PetSettings()
 
@@ -21,6 +54,17 @@ public final class PetSettings: ObservableObject {
         static let petPatEnabled = "stellina_petpat_enabled"
         static let sleepEnabled = "stellina_sleep_enabled"
         static let sleepIdleSeconds = "stellina_sleep_idle_seconds"
+
+        // Gamification & Bisogni
+        static let gamificationEnabled = "stellina_gamification_enabled"
+        static let showNeedBadges = "stellina_show_need_badges"
+        static let affectionDecayMinutes = "stellina_affection_decay_minutes"
+        static let hungerDecayMinutes = "stellina_hunger_decay_minutes"
+
+        // Feature Cute & Accessori
+        static let equippedAccessory = "stellina_equipped_accessory"
+        static let curiousEarTiltEnabled = "stellina_curious_ear_tilt_enabled"
+        static let nightFirefliesEnabled = "stellina_night_fireflies_enabled"
     }
 
     // Parametri Fisici e Visivi
@@ -60,6 +104,48 @@ public final class PetSettings: ObservableObject {
     @Published public var sleepIdleSeconds: Double {
         didSet { UserDefaults.standard.set(sleepIdleSeconds, forKey: Keys.sleepIdleSeconds) }
     }
+
+    // Gamification & Bisogni
+    @Published public var gamificationEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(gamificationEnabled, forKey: Keys.gamificationEnabled)
+            onGamificationChanged?()
+        }
+    }
+
+    @Published public var showNeedBadges: Bool {
+        didSet {
+            UserDefaults.standard.set(showNeedBadges, forKey: Keys.showNeedBadges)
+            onGamificationChanged?()
+        }
+    }
+
+    @Published public var affectionDecayMinutes: Double {
+        didSet { UserDefaults.standard.set(affectionDecayMinutes, forKey: Keys.affectionDecayMinutes) }
+    }
+
+    @Published public var hungerDecayMinutes: Double {
+        didSet { UserDefaults.standard.set(hungerDecayMinutes, forKey: Keys.hungerDecayMinutes) }
+    }
+
+    // Accessori & Feature Cute
+    @Published public var equippedAccessory: PetAccessory {
+        didSet {
+            UserDefaults.standard.set(equippedAccessory.rawValue, forKey: Keys.equippedAccessory)
+            onAccessoryChanged?()
+        }
+    }
+
+    @Published public var curiousEarTiltEnabled: Bool {
+        didSet { UserDefaults.standard.set(curiousEarTiltEnabled, forKey: Keys.curiousEarTiltEnabled) }
+    }
+
+    @Published public var nightFirefliesEnabled: Bool {
+        didSet { UserDefaults.standard.set(nightFirefliesEnabled, forKey: Keys.nightFirefliesEnabled) }
+    }
+
+    public var onAccessoryChanged: (() -> Void)?
+    public var onGamificationChanged: (() -> Void)?
 
     // Percorsi Sprite Personalizzati
     @Published public var customIdlePath: String? {
@@ -128,6 +214,24 @@ public final class PetSettings: ObservableObject {
         self.customWalkRightPaths = defaults.stringArray(forKey: Keys.customWalkRightPaths) ?? []
         self.customFallPath = defaults.string(forKey: Keys.customFallPath)
         self.customSleepPath = defaults.string(forKey: Keys.customSleepPath)
+
+        // Gamification & Bisogni
+        self.gamificationEnabled = defaults.object(forKey: Keys.gamificationEnabled) != nil ? defaults.bool(forKey: Keys.gamificationEnabled) : true
+        self.showNeedBadges = defaults.object(forKey: Keys.showNeedBadges) != nil ? defaults.bool(forKey: Keys.showNeedBadges) : true
+        let savedAffDecay = defaults.double(forKey: Keys.affectionDecayMinutes)
+        self.affectionDecayMinutes = savedAffDecay > 0 ? savedAffDecay : 12.0
+        let savedHungerDecay = defaults.double(forKey: Keys.hungerDecayMinutes)
+        self.hungerDecayMinutes = savedHungerDecay > 0 ? savedHungerDecay : 10.0
+
+        // Accessori & Feature Cute
+        if let rawAcc = defaults.string(forKey: Keys.equippedAccessory),
+           let acc = PetAccessory(rawValue: rawAcc) {
+            self.equippedAccessory = acc
+        } else {
+            self.equippedAccessory = .none
+        }
+        self.curiousEarTiltEnabled = defaults.object(forKey: Keys.curiousEarTiltEnabled) != nil ? defaults.bool(forKey: Keys.curiousEarTiltEnabled) : true
+        self.nightFirefliesEnabled = defaults.object(forKey: Keys.nightFirefliesEnabled) != nil ? defaults.bool(forKey: Keys.nightFirefliesEnabled) : true
     }
 
     public func resetToDefaults() {
@@ -141,6 +245,15 @@ public final class PetSettings: ObservableObject {
         petPatEnabled = true
         sleepEnabled = true
         sleepIdleSeconds = 120.0
+
+        gamificationEnabled = true
+        showNeedBadges = true
+        affectionDecayMinutes = 12.0
+        hungerDecayMinutes = 10.0
+
+        equippedAccessory = .none
+        curiousEarTiltEnabled = true
+        nightFirefliesEnabled = true
 
         customIdlePath = nil
         customWalkLeftPaths = []
@@ -157,6 +270,13 @@ public final class PetSettings: ObservableObject {
         UserDefaults.standard.removeObject(forKey: Keys.petPatEnabled)
         UserDefaults.standard.removeObject(forKey: Keys.sleepEnabled)
         UserDefaults.standard.removeObject(forKey: Keys.sleepIdleSeconds)
+        UserDefaults.standard.removeObject(forKey: Keys.gamificationEnabled)
+        UserDefaults.standard.removeObject(forKey: Keys.showNeedBadges)
+        UserDefaults.standard.removeObject(forKey: Keys.affectionDecayMinutes)
+        UserDefaults.standard.removeObject(forKey: Keys.hungerDecayMinutes)
+        UserDefaults.standard.removeObject(forKey: Keys.equippedAccessory)
+        UserDefaults.standard.removeObject(forKey: Keys.curiousEarTiltEnabled)
+        UserDefaults.standard.removeObject(forKey: Keys.nightFirefliesEnabled)
         UserDefaults.standard.removeObject(forKey: Keys.customIdlePath)
         UserDefaults.standard.removeObject(forKey: Keys.customWalkLeftPaths)
         UserDefaults.standard.removeObject(forKey: Keys.customWalkRightPaths)
@@ -164,5 +284,7 @@ public final class PetSettings: ObservableObject {
         UserDefaults.standard.removeObject(forKey: Keys.customSleepPath)
 
         onSpritesChanged?()
+        onGamificationChanged?()
+        onAccessoryChanged?()
     }
 }

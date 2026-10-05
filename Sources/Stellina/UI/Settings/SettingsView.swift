@@ -20,12 +20,17 @@ public struct SettingsView: View {
                     Label("Interazioni & Audio", systemImage: "heart.circle")
                 }
 
+            GamificationSettingsView()
+                .tabItem {
+                    Label("Bisogni & Accessori", systemImage: "sparkles")
+                }
+
             aboutTab
                 .tabItem {
                     Label("Informazioni", systemImage: "info.circle")
                 }
         }
-        .frame(width: 540, height: 460)
+        .frame(width: 540, height: 500)
     }
 
     private var aboutTab: some View {

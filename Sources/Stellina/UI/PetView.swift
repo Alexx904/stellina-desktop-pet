@@ -15,8 +15,15 @@ public final class PetView: NSView, NSMenuDelegate {
     // Layer dedicati per separazione netta tra sprite del pet e overlay della mano
     private let spriteLayer = CALayer()
     private let headpatLayer = CALayer()
+    private let accessoryLayer = CATextLayer()
+    private let needBadgeLayer = CATextLayer()
+
     private var isHeadpatActive: Bool = false
     private var sleepMenuItem: NSMenuItem?
+    private var contextNeedsMenuItem: NSMenuItem?
+    private var contextAccessoryMenuItem: NSMenuItem?
+    private var fireflyTickCounter: Int = 0
+    private var needCheckTickCounter: Int = 0
 
     public var onOpenSettingsRequested: (() -> Void)?
 
@@ -24,12 +31,14 @@ public final class PetView: NSView, NSMenuDelegate {
         super.init(frame: frameRect)
         setupLayers()
         setupContextMenu()
+        setupListeners()
     }
 
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
         setupLayers()
         setupContextMenu()
+        setupListeners()
     }
 
     private func setupLayers() {
@@ -37,20 +46,58 @@ public final class PetView: NSView, NSMenuDelegate {
         guard let rootLayer = self.layer else { return }
         rootLayer.backgroundColor = NSColor.clear.cgColor
 
+        let scale = NSScreen.main?.backingScaleFactor ?? 2.0
+
         // 1. Sprite del Pet: anchor point alla base (0.5, 0.0) per deformazioni naturali a terra
         spriteLayer.contentsGravity = .resizeAspect
         spriteLayer.anchorPoint = CGPoint(x: 0.5, y: 0.0)
         spriteLayer.zPosition = 10
         rootLayer.addSublayer(spriteLayer)
 
-        // 2. Overlay mano pat-pat: sopra il pet, centrata sulla testa
+        // 2. Accessorio indossato: inserito come sublayer di spriteLayer così eredita stretch, bend e hop
+        accessoryLayer.contentsScale = scale
+        accessoryLayer.alignmentMode = .center
+        accessoryLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        accessoryLayer.zPosition = 35
+        accessoryLayer.opacity = 0.0
+        spriteLayer.addSublayer(accessoryLayer)
+
+        // 3. Overlay mano pat-pat: sopra il pet, centrata sulla testa
         headpatLayer.contentsGravity = .resizeAspect
         headpatLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         headpatLayer.opacity = 0.0
         headpatLayer.zPosition = 50
         rootLayer.addSublayer(headpatLayer)
 
+        // 4. Badge bisogni (fame e coccole insoddisfatti)
+        needBadgeLayer.contentsScale = scale
+        needBadgeLayer.alignmentMode = .center
+        needBadgeLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        needBadgeLayer.zPosition = 85
+        needBadgeLayer.opacity = 0.0
+        rootLayer.addSublayer(needBadgeLayer)
+
         updateSublayerLayout()
+        updateAccessory()
+        updateNeedBadges()
+    }
+
+    private func setupListeners() {
+        PetSettings.shared.onAccessoryChanged = { [weak self] in
+            DispatchQueue.main.async {
+                self?.updateAccessory()
+            }
+        }
+        PetSettings.shared.onGamificationChanged = { [weak self] in
+            DispatchQueue.main.async {
+                self?.updateNeedBadges()
+            }
+        }
+        PetNeedsManager.shared.onNeedsStatusAlert = { [weak self] _, _ in
+            DispatchQueue.main.async {
+                self?.updateNeedBadges()
+            }
+        }
     }
 
     override public func layout() {
@@ -69,10 +116,22 @@ public final class PetView: NSView, NSMenuDelegate {
         spriteLayer.bounds = CGRect(x: 0, y: 0, width: w, height: h)
         spriteLayer.position = CGPoint(x: w / 2.0, y: 0.0)
 
+        // Accessorio sulla sommità della testa di Stellina
+        let accSize = w * 0.35
+        accessoryLayer.bounds = CGRect(x: 0, y: 0, width: accSize, height: accSize)
+        accessoryLayer.fontSize = accSize * 0.75
+        accessoryLayer.position = CGPoint(x: w * 0.5, y: h * 0.85)
+
         // Mano pat-pat posizionata sulla sommità della testa
         let handSize = w * 0.75
         headpatLayer.bounds = CGRect(x: 0, y: 0, width: handSize, height: handSize)
         headpatLayer.position = CGPoint(x: w * 0.5, y: h * 0.72)
+
+        // Badge bisogni in alto a destra
+        let badgeSize: CGFloat = 36.0
+        needBadgeLayer.bounds = CGRect(x: 0, y: 0, width: badgeSize, height: badgeSize)
+        needBadgeLayer.fontSize = 24
+        needBadgeLayer.position = CGPoint(x: w * 0.78, y: h * 0.86)
 
         CATransaction.commit()
     }
@@ -95,11 +154,32 @@ public final class PetView: NSView, NSMenuDelegate {
     public func setSpriteImage(_ image: NSImage?) {
         guard let image = image else { return }
         spriteLayer.contents = image
+
+        // Controllo periodico lucciole notturne (sera da orario locale PC)
+        fireflyTickCounter += 1
+        if fireflyTickCounter >= 75 { // ogni ~2.5 secondi
+            fireflyTickCounter = 0
+            checkAndSpawnFirefly()
+        }
+
+        // Controllo periodico aggiornamento badge bisogni
+        needCheckTickCounter += 1
+        if needCheckTickCounter >= 30 { // ogni ~1 secondo
+            needCheckTickCounter = 0
+            updateNeedBadges()
+        }
     }
 
     private func setupContextMenu() {
         let menu = NSMenu()
         menu.delegate = self
+
+        let needsItem = NSMenuItem(title: "💖 Coccole: 100% | 🥕 Sazietà: 100%", action: nil, keyEquivalent: "")
+        needsItem.isEnabled = false
+        self.contextNeedsMenuItem = needsItem
+        menu.addItem(needsItem)
+
+        menu.addItem(NSMenuItem.separator())
 
         let petItem = NSMenuItem(title: "Fai le Coccole 💖", action: #selector(patAction), keyEquivalent: "p")
         petItem.target = self
@@ -113,6 +193,19 @@ public final class PetView: NSView, NSMenuDelegate {
         let carrotItem = NSMenuItem(title: "Lancia Carota 🥕", action: #selector(spawnCarrotAction), keyEquivalent: "c")
         carrotItem.target = self
         menu.addItem(carrotItem)
+
+        // Sottomenu Accessori
+        let accItem = NSMenuItem(title: "Accessorio sulla Testa", action: nil, keyEquivalent: "")
+        let accSubmenu = NSMenu()
+        for acc in PetAccessory.allCases {
+            let item = NSMenuItem(title: acc.displayName, action: #selector(selectAccessoryAction(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = acc
+            accSubmenu.addItem(item)
+        }
+        accItem.submenu = accSubmenu
+        self.contextAccessoryMenuItem = accItem
+        menu.addItem(accItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -138,6 +231,30 @@ public final class PetView: NSView, NSMenuDelegate {
             sleepMenuItem?.title = "Sveglia Stellina ☀️"
         } else {
             sleepMenuItem?.title = "Metti a Dormire 💤"
+        }
+
+        if PetSettings.shared.gamificationEnabled {
+            contextNeedsMenuItem?.isHidden = false
+            let aff = Int(PetNeedsManager.shared.affection)
+            let full = Int(PetNeedsManager.shared.fullness)
+            contextNeedsMenuItem?.title = "💖 Coccole: \(aff)% | 🥕 Sazietà: \(full)%"
+        } else {
+            contextNeedsMenuItem?.isHidden = true
+        }
+
+        if let sub = contextAccessoryMenuItem?.submenu {
+            let current = PetSettings.shared.equippedAccessory
+            for item in sub.items {
+                if let acc = item.representedObject as? PetAccessory {
+                    item.state = (acc == current) ? .on : .off
+                }
+            }
+        }
+    }
+
+    @objc private func selectAccessoryAction(_ sender: NSMenuItem) {
+        if let acc = sender.representedObject as? PetAccessory {
+            PetSettings.shared.equippedAccessory = acc
         }
     }
 
@@ -184,6 +301,17 @@ public final class PetView: NSView, NSMenuDelegate {
         let dx = currentX - lastMouseX
         let now = Date().timeIntervalSince1970
 
+        // Curious Ear Tilt: inclinazione curiosa delle orecchie/testolina verso il cursore del mouse
+        if PetSettings.shared.curiousEarTiltEnabled && !behavior.isDragging && behavior.currentState != .petted && !isHeadpatActive {
+            let centerX = bounds.width / 2.0
+            let diffX = currentX - centerX
+            let tiltAngle = max(-0.08, min(0.08, Double(diffX) * 0.001))
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(0.12)
+            spriteLayer.transform = CATransform3DMakeRotation(tiltAngle, 0, 0, 1)
+            CATransaction.commit()
+        }
+
         if abs(dx) > 4.0 {
             let direction = dx > 0 ? 1 : -1
             if direction != lastDirection && (now - lastStrokeTime) < 0.7 {
@@ -198,6 +326,15 @@ public final class PetView: NSView, NSMenuDelegate {
             lastDirection = direction
             lastStrokeTime = now
             lastMouseX = currentX
+        }
+    }
+
+    override public func mouseExited(with event: NSEvent) {
+        if PetSettings.shared.curiousEarTiltEnabled && !behavior.isDragging && behavior.currentState != .petted && !isHeadpatActive {
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(0.2)
+            spriteLayer.transform = CATransform3DIdentity
+            CATransaction.commit()
         }
     }
 
@@ -510,6 +647,151 @@ public final class PetView: NSView, NSMenuDelegate {
                     pLayer.removeFromSuperlayer()
                 }
             }
+        }
+    }
+
+    // MARK: - Accessori Equipaggiabili
+
+    public func updateAccessory() {
+        let acc = PetSettings.shared.equippedAccessory
+        if let emoji = acc.emoji {
+            accessoryLayer.string = emoji
+            accessoryLayer.opacity = 1.0
+        } else {
+            accessoryLayer.opacity = 0.0
+            accessoryLayer.string = ""
+        }
+    }
+
+    // MARK: - Gamification & Badge Bisogni
+
+    public func updateNeedBadges() {
+        let settings = PetSettings.shared
+        guard settings.gamificationEnabled && settings.showNeedBadges else {
+            hideNeedBadge()
+            return
+        }
+
+        let needs = PetNeedsManager.shared
+        let isAffLow = needs.isAffectionLow
+        let isFullLow = needs.isFullnessLow
+
+        if isAffLow && isFullLow {
+            showNeedBadge(emoji: "🥺🥕")
+            triggerTummyRumble()
+        } else if isAffLow {
+            showNeedBadge(emoji: "🥺")
+        } else if isFullLow {
+            showNeedBadge(emoji: "🤤")
+            triggerTummyRumble()
+        } else {
+            hideNeedBadge()
+        }
+    }
+
+    private func showNeedBadge(emoji: String) {
+        needBadgeLayer.string = emoji
+        if needBadgeLayer.opacity < 0.5 {
+            let fadeIn = CABasicAnimation(keyPath: "opacity")
+            fadeIn.fromValue = needBadgeLayer.opacity
+            fadeIn.toValue = 1.0
+            fadeIn.duration = 0.25
+            needBadgeLayer.add(fadeIn, forKey: "badgeFadeIn")
+            needBadgeLayer.opacity = 1.0
+
+            let bobAnim = CAKeyframeAnimation(keyPath: "position.y")
+            let basePosY = bounds.height * 0.86
+            bobAnim.values = [basePosY, basePosY + 6, basePosY]
+            bobAnim.keyTimes = [0.0, 0.5, 1.0]
+            bobAnim.duration = 1.2
+            bobAnim.repeatCount = .infinity
+            bobAnim.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            needBadgeLayer.add(bobAnim, forKey: "badgeBob")
+        }
+    }
+
+    private func hideNeedBadge() {
+        if needBadgeLayer.opacity > 0.0 {
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(0.2)
+            needBadgeLayer.opacity = 0.0
+            CATransaction.commit()
+            needBadgeLayer.removeAnimation(forKey: "badgeBob")
+        }
+    }
+
+    public func triggerTummyRumble() {
+        guard spriteLayer.animation(forKey: "tummyRumble") == nil else { return }
+        let rumbleAnim = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        rumbleAnim.values = [0.0, -2.5, 2.5, -2.0, 2.0, 0.0]
+        rumbleAnim.duration = 0.4
+        rumbleAnim.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        spriteLayer.add(rumbleAnim, forKey: "tummyRumble")
+    }
+
+    // MARK: - Effetto Lucciole Notturne (Orario Serale PC)
+
+    private func checkAndSpawnFirefly() {
+        guard PetSettings.shared.nightFirefliesEnabled else { return }
+        let hour = Calendar.current.component(.hour, from: Date())
+        let isEveningOrNight = (hour >= 19 || hour < 7)
+        if isEveningOrNight {
+            spawnFireflyParticle()
+        }
+    }
+
+    private func spawnFireflyParticle() {
+        guard let root = self.layer else { return }
+
+        let fireflyLayer = CATextLayer()
+        let symbols = ["✨", "🟡", "🌟"]
+        fireflyLayer.string = symbols.randomElement() ?? "✨"
+        fireflyLayer.fontSize = CGFloat.random(in: 12...16)
+        fireflyLayer.alignmentMode = .center
+        fireflyLayer.zPosition = 90
+        fireflyLayer.opacity = 0.0
+
+        let startX = CGFloat.random(in: 10...(bounds.width - 20))
+        let startY = CGFloat.random(in: 10...(bounds.height * 0.5))
+        fireflyLayer.frame = CGRect(x: startX, y: startY, width: 22, height: 22)
+        root.addSublayer(fireflyLayer)
+
+        let duration: CFTimeInterval = Double.random(in: 2.2...3.5)
+
+        // Traiettoria fluttuante verso l'alto con oscillazione sinusoidale
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: startX, y: startY))
+        let driftX = CGFloat.random(in: -30...30)
+        let endY = startY + CGFloat.random(in: 45...85)
+        let control1 = CGPoint(x: startX + driftX, y: startY + 25)
+        let control2 = CGPoint(x: startX - (driftX * 0.5), y: startY + 50)
+        path.addCurve(to: CGPoint(x: startX + (driftX * 0.7), y: endY), control1: control1, control2: control2)
+
+        let positionAnim = CAKeyframeAnimation(keyPath: "position")
+        positionAnim.path = path
+        positionAnim.duration = duration
+        positionAnim.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+
+        let opacityAnim = CAKeyframeAnimation(keyPath: "opacity")
+        opacityAnim.values = [0.0, 0.85, 0.9, 0.4, 0.0]
+        opacityAnim.keyTimes = [0.0, 0.25, 0.5, 0.75, 1.0]
+        opacityAnim.duration = duration
+
+        let scaleAnim = CAKeyframeAnimation(keyPath: "transform.scale")
+        scaleAnim.values = [0.6, 1.1, 0.95, 1.0, 0.5]
+        scaleAnim.keyTimes = [0.0, 0.3, 0.6, 0.8, 1.0]
+        scaleAnim.duration = duration
+
+        let group = CAAnimationGroup()
+        group.animations = [positionAnim, opacityAnim, scaleAnim]
+        group.duration = duration
+        group.isRemovedOnCompletion = false
+        group.fillMode = .forwards
+
+        fireflyLayer.add(group, forKey: "fireflyFloat")
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            fireflyLayer.removeFromSuperlayer()
         }
     }
 }
