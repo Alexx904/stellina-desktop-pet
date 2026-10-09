@@ -68,7 +68,9 @@ Comandi vietati:         rm -rf fuori repo, git push --force, alterazione file d
 
 ## Log sessioni (ultime 5, la più recente in alto)
 
+- 2026-10-09 · Perfezionati sprite di camminata per Cane e Gatto: generati sprite in profilo laterale con passo e zampe differenziate (left: zampe sinistre avanti, right: zampe destre avanti) · Asset aggiornati e verificati.
 - 2026-10-09 · Implementata Epic 4: Alessandro Miniello come ideatore, personaggi standard Cane e Gatto con sprite nativi, catalogo cibi (Carota, Osso, Pesce, Bistecca, Formaggio, Mela, Biscotto) e particelle VFX a tema · Moduli pronti per accettazione.
 - 2026-10-09 · Eseguito workflow /onboard completo: mappatura stack, reverse engineering architettura, requisiti dedotti, baseline e backlog prioritizzato · Build CI PASS, suite test da creare.
+
 
 

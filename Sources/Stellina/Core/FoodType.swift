@@ -72,3 +72,4 @@ public enum FoodType: String, CaseIterable, Identifiable {
         }
     }
 }
+
