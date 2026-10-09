@@ -199,7 +199,21 @@ open build/Stellina.app
 
 ---
 
+## 📚 Documentazione Tecnica & Architettura
+
+La documentazione completa del progetto, le decisioni architetturali e lo stato delle attività sono disponibili nella directory [`docs/`](docs/):
+
+- [`docs/0_REQUIREMENTS.md`](docs/0_REQUIREMENTS.md) — Requisiti funzionali, casi d'uso e non-goals.
+- [`docs/1_PROJECT_CONTEXT.md`](docs/1_PROJECT_CONTEXT.md) — Visione, obiettivi e requisiti non funzionali.
+- [`docs/2_ARCHITECTURE.md`](docs/2_ARCHITECTURE.md) — Mappa dei layer, diagrammi di flusso, modello dati e ADR.
+- [`docs/3_TASK_LIST.md`](docs/3_TASK_LIST.md) — Backlog e piano di sviluppo prioritizzato.
+- [`docs/4_CHANGELOG.md`](docs/4_CHANGELOG.md) — Storico delle feature completate e accettate.
+- [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md) — Memoria viva del progetto e baseline di verifica.
+
+---
+
 ## 📄 Licenza
 
 Questo progetto è rilasciato sotto licenza [MIT](LICENSE).  
 Sviluppato con passione per rendere la scrivania del tuo Mac un posto più vivace e accogliente! 💖
+
