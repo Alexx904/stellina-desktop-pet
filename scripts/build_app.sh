@@ -50,9 +50,14 @@ fi
 # 4. Copia Info.plist
 cp "${PROJECT_DIR}/Resources/Info.plist" "${CONTENTS_DIR}/Info.plist"
 
-# 5. Copia gli asset di default
-mkdir -p "${RESOURCES_DIR}/Assets Stellina"
-cp -R "${PROJECT_DIR}/Assets Stellina/"* "${RESOURCES_DIR}/Assets Stellina/"
+# 5. Copia gli asset di default (tutti i personaggi standard)
+for dir in "Assets Stellina" "Assets Cane" "Assets Gatto"; do
+    if [ -d "${PROJECT_DIR}/${dir}" ]; then
+        mkdir -p "${RESOURCES_DIR}/${dir}"
+        cp -R "${PROJECT_DIR}/${dir}/"* "${RESOURCES_DIR}/${dir}/"
+    fi
+done
+
 
 # 6. Firma ad-hoc locale per compatibilità con macOS Gatekeeper / Apple Silicon
 echo "🔏 Firma del bundle ad-hoc..."

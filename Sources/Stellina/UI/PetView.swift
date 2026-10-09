@@ -20,7 +20,9 @@ public final class PetView: NSView, NSMenuDelegate {
     private var isHeadpatActive: Bool = false
     private var sleepMenuItem: NSMenuItem?
     private var contextNeedsMenuItem: NSMenuItem?
+    private var foodMenuItem: NSMenuItem?
     private var needCheckTickCounter: Int = 0
+
 
     public var onOpenSettingsRequested: (() -> Void)?
 
@@ -144,10 +146,14 @@ public final class PetView: NSView, NSMenuDelegate {
         let menu = NSMenu()
         menu.delegate = self
 
-        let needsItem = NSMenuItem(title: "💖 Coccole: 100% | 🥕 Sazietà: 100%", action: nil, keyEquivalent: "")
+        let needsItem = NSMenuItem(title: "💖 Coccole: 100% | \(PetSettings.shared.selectedFood.emoji) Sazietà: 100%", action: nil, keyEquivalent: "")
         needsItem.isEnabled = false
         self.contextNeedsMenuItem = needsItem
         menu.addItem(needsItem)
+
+        let authorItem = NSMenuItem(title: "Ideato da Alessandro Miniello ✨", action: nil, keyEquivalent: "")
+        authorItem.isEnabled = false
+        menu.addItem(authorItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -160,9 +166,23 @@ public final class PetView: NSView, NSMenuDelegate {
         self.sleepMenuItem = sleepItem
         menu.addItem(sleepItem)
 
-        let carrotItem = NSMenuItem(title: "Lancia Carota 🥕", action: #selector(spawnCarrotAction), keyEquivalent: "c")
-        carrotItem.target = self
-        menu.addItem(carrotItem)
+        let curFood = PetSettings.shared.selectedFood
+        let foodItem = NSMenuItem(title: "Lancia \(curFood.displayName) \(curFood.emoji)", action: #selector(spawnCarrotAction), keyEquivalent: "c")
+        foodItem.target = self
+        self.foodMenuItem = foodItem
+        menu.addItem(foodItem)
+
+        // Sottomenu Selezione Cibo
+        let foodsMenu = NSMenu()
+        for f in FoodType.allCases {
+            let item = NSMenuItem(title: "\(f.emoji) \(f.displayName)", action: #selector(selectFoodAction(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = f.rawValue
+            foodsMenu.addItem(item)
+        }
+        let chooseFoodItem = NSMenuItem(title: "Scegli Snack...", action: nil, keyEquivalent: "")
+        chooseFoodItem.submenu = foodsMenu
+        menu.addItem(chooseFoodItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -176,7 +196,7 @@ public final class PetView: NSView, NSMenuDelegate {
 
         menu.addItem(NSMenuItem.separator())
 
-        let quitItem = NSMenuItem(title: "Chiudi Stellina", action: #selector(quitAction), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: "Chiudi Applicazione", action: #selector(quitAction), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
 
@@ -185,16 +205,19 @@ public final class PetView: NSView, NSMenuDelegate {
 
     public func menuNeedsUpdate(_ menu: NSMenu) {
         if behavior.currentState == .sleeping {
-            sleepMenuItem?.title = "Sveglia Stellina ☀️"
+            sleepMenuItem?.title = "Sveglia \(PetSettings.shared.selectedCharacter.displayName) ☀️"
         } else {
             sleepMenuItem?.title = "Metti a Dormire 💤"
         }
+
+        let curFood = PetSettings.shared.selectedFood
+        foodMenuItem?.title = "Lancia \(curFood.displayName) \(curFood.emoji)"
 
         if PetSettings.shared.gamificationEnabled {
             contextNeedsMenuItem?.isHidden = false
             let aff = Int(PetNeedsManager.shared.affection)
             let full = Int(PetNeedsManager.shared.fullness)
-            contextNeedsMenuItem?.title = "💖 Coccole: \(aff)% | 🥕 Sazietà: \(full)%"
+            contextNeedsMenuItem?.title = "💖 Coccole: \(aff)% | \(curFood.emoji) Sazietà: \(full)%"
         } else {
             contextNeedsMenuItem?.isHidden = true
         }
@@ -212,6 +235,13 @@ public final class PetView: NSView, NSMenuDelegate {
         CarrotManager.shared.spawnCarrot()
     }
 
+    @objc private func selectFoodAction(_ sender: NSMenuItem) {
+        if let raw = sender.representedObject as? String, let f = FoodType(rawValue: raw) {
+            PetSettings.shared.selectedFood = f
+            CarrotManager.shared.spawnCarrot(foodType: f)
+        }
+    }
+
     @objc private func openSettingsAction() {
         onOpenSettingsRequested?()
     }
@@ -223,6 +253,7 @@ public final class PetView: NSView, NSMenuDelegate {
     @objc private func quitAction() {
         NSApplication.shared.terminate(nil)
     }
+
 
     // MARK: - Gestures & Pat-Pat Detection
 
@@ -515,8 +546,9 @@ public final class PetView: NSView, NSMenuDelegate {
         }
     }
 
-    public func triggerEatAnimation() {
-        spawnEatParticles()
+    public func triggerEatAnimation(food: FoodType? = nil) {
+        let activeFood = food ?? PetSettings.shared.selectedFood
+        spawnEatParticles(food: activeFood)
 
         // Animazione cartoon di masticazione procedurale (munching chew squish & bounce)
         let anim = CAKeyframeAnimation(keyPath: "transform")
@@ -540,11 +572,12 @@ public final class PetView: NSView, NSMenuDelegate {
         spriteLayer.add(anim, forKey: "eatChewAnim")
     }
 
-    private func spawnEatParticles() {
+    private func spawnEatParticles(food: FoodType = PetSettings.shared.selectedFood) {
         guard let rootLayer = self.layer else { return }
 
-        let particles = ["🥕", "🔸", "✨", "🧡", "🥕"]
+        let particles = food.particles
         for (i, p) in particles.enumerated() {
+
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.08) { [weak self] in
                 guard let self = self, let root = self.layer else { return }
 

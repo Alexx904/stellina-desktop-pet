@@ -6,8 +6,10 @@
 
 <p align="center">
   <strong>Un compagno virtuale nativo per macOS leggero, interattivo e animato a 60 FPS.</strong><br>
-  Sviluppato in <em>Swift</em>, <em>AppKit</em> e <em>SwiftUI</em>, con simulazione fisica in tempo reale, gamification, inseguimento carote, interazioni tattili e consumo di risorse CPU quasi nullo (< 0.5%).
+  Ideato da <strong>Alessandro Miniello</strong>.<br>
+  Sviluppato in <em>Swift</em>, <em>AppKit</em> e <em>SwiftUI</em>, con simulazione fisica in tempo reale, molteplici personaggi (Coniglio, Cane, Gatto), cibi selezionabili, gamification, interazioni tattili e consumo CPU quasi nullo (&lt; 0.5%).
 </p>
+
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-macOS%2012.0+-black?logo=apple&style=flat-square" alt="macOS 12+" />
@@ -27,16 +29,37 @@
 
 ---
 
-### 🥕 Inseguimento Carota in Mano (Carrot Follower AI) & Nutrizione
-- **Inseguimento Dinamico**: Quando afferri una carota con il cursore del mouse, Stellina si sveglia (se stava dormendo), si gira verso la carota e **la insegue a passo svelto** camminando sul desktop!
-- **Saltelli Gioiosi di Attesa**: Se tieni la carota ferma sopra di lei, si posiziona esattamente sotto il cibo ed esegue piccoli saltelli di anticipazione (`hop`).
-- **Drag & Drop e Masticazione**:
-  - Trascina la carota verso il coniglietto o lasciala cadere vicino a lui per fargliela sgranocchiare.
-  - **Animazione Cartoon di Masticazione**: Movimenti rapidi di sgranocchiamento (*munching bounce*).
-  - **Effetti Particellari (VFX)**: Briciole arancioni, cuoricini e stelline (`🥕`, `🔸`, `✨`, `🧡`).
-  - **Effetti Sonori (SFX)**: Sequenza ritmica e croccante di morsi (*crunch*).
+### 🐶🐱🐰 Personaggi Standard Selezionabili
+- **3 Pet Ufficiali Inclusi:**
+  - 🐰 **Stellina (Coniglietto):** La mascotte originale soffice e vivace.
+  - 🐶 **Cagnolino:** Un cucciolo allegro con orecchie morbide e collare azzurro.
+  - 🐱 **Gattino:** Un tenero micio calico tigrato, curioso e giocherellone.
+- **Cambio Istantaneo a Runtime:** Seleziona il tuo compagno preferito direttamente dal tab *Sprite & Aspetto* delle Impostazioni con hot-reload immediato, mantenendo la possibilità di sostituire singoli frame con immagini custom dal Finder.
 
 ---
+
+### 🥕🦴🐟 Cibi & Snack Selezionabili
+- **Ampio Menu di Alimenti:**
+  - 🥕 **Carota:** Lo snack preferito del coniglietto.
+  - 🦴 **Osso:** Il passatempo prediletto del cagnolino.
+  - 🐟 **Pesce:** La prelibatezza del gattino.
+  - 🥩 **Bistecca**, 🧀 **Formaggio**, 🍎 **Mela**, 🍪 **Biscotto**.
+- **Effetti Particellari Dinamici:** Ogni cibo consumato sprigiona briciole ed emoji dedicate durante la masticazione (*crunch*)!
+- **Selezione Rapida:** Cambia al volo lo snack dalla barra dei menu `🐾`, dal tasto destro o dalle Impostazioni.
+
+---
+
+### 🥕 Inseguimento Cibo in Mano (Food Follower AI) & Nutrizione
+- **Inseguimento Dinamico:** Quando afferri il cibo con il cursore del mouse, il pet si sveglia (se stava dormendo), si gira verso lo snack e **lo insegue a passo svelto** camminando sul desktop!
+- **Saltelli Gioiosi di Attesa:** Se tieni lo snack fermo sopra di lui, si posiziona esattamente sotto il cibo ed esegue piccoli saltelli di anticipazione (`hop`).
+- **Drag & Drop e Masticazione:**
+  - Trascina il cibo verso il pet o lascialo cadere vicino a lui per farglielo sgranocchiare.
+  - **Animazione Cartoon di Masticazione:** Movimenti rapidi di sgranocchiamento (*munching bounce*).
+  - **Effetti Particellari (VFX):** Briciole ed emoji dedicate a seconda dello snack consumato.
+  - **Effetti Sonori (SFX):** Sequenza ritmica e croccante di morsi (*crunch*).
+
+---
+
 
 ### 💖 Gamification & Sistema Bisogni (Tamagotchi Engine)
 - **Barre di Benessere in Tempo Reale**:
@@ -212,8 +235,15 @@ La documentazione completa del progetto, le decisioni architetturali e lo stato 
 
 ---
 
+## 👨‍💻 Ideatore & Autore
+
+Questo progetto è stato ideato con passione da **Alessandro Miniello**.
+
+---
+
 ## 📄 Licenza
 
 Questo progetto è rilasciato sotto licenza [MIT](LICENSE).  
 Sviluppato con passione per rendere la scrivania del tuo Mac un posto più vivace e accogliente! 💖
+
 

@@ -77,6 +77,11 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.petView?.triggerEatAnimation()
         }
 
+        behavior.onEatTriggeredWithFood = { [weak self] food in
+            self?.petView?.triggerEatAnimation(food: food)
+        }
+
+
         // 5. Ascolta modifiche delle dimensioni dalle impostazioni
         settings.$windowSize
             .receive(on: RunLoop.main)

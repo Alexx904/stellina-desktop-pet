@@ -22,6 +22,18 @@ public final class CarrotView: NSView {
         setupLayers()
     }
 
+    public var foodType: FoodType = .carrot {
+        didSet {
+            emojiLayer.string = foodType.emoji
+        }
+    }
+
+    public convenience init(frame frameRect: NSRect, foodType: FoodType = .carrot) {
+        self.init(frame: frameRect)
+        self.foodType = foodType
+        self.emojiLayer.string = foodType.emoji
+    }
+
     private func setupLayers() {
         wantsLayer = true
         guard let root = self.layer else { return }
@@ -29,11 +41,12 @@ public final class CarrotView: NSView {
 
         let scale = NSScreen.main?.backingScaleFactor ?? 2.0
         emojiLayer.contentsScale = scale
-        emojiLayer.string = "🥕"
+        emojiLayer.string = foodType.emoji
         emojiLayer.fontSize = 36
         emojiLayer.alignmentMode = .center
         emojiLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         emojiLayer.zPosition = 10
+
 
         // Leggera ombra morbida per dare rilievo
         emojiLayer.shadowColor = NSColor.black.withAlphaComponent(0.35).cgColor

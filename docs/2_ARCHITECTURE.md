@@ -14,13 +14,16 @@ Sources/Stellina/
 ├── AppDelegate.swift              [Life Cycle & Orchestrator]
 ├── Core/                          [Core Business & Simulation Layer]
 │   ├── PetState.swift             (Macchina a stati finiti)
+│   ├── PetCharacter.swift         (Enum personaggi standard: coniglio, cane, gatto)
+│   ├── FoodType.swift             (Enum alimenti e snack selezionabili con emoji e particelle)
 │   ├── BehaviorSystem.swift       (Decision engine comportamentale & timer tick)
 │   ├── PhysicsSystem.swift        (Fisica newtoniana, gravità, limiti schermo)
-│   ├── CarrotManager.swift        (Gestore spawn, posizionamento e consumo carote)
+│   ├── CarrotManager.swift        (Gestore spawn, posizionamento e consumo carote/snack)
 │   ├── PetNeedsManager.swift      (Gamification engine: affetto, sazietà, decadimento)
 │   ├── SoundManager.swift         (Sintesi audio ed effetti sonori di sistema)
-│   ├── AssetManager.swift         (Caching sprite e decodifica GIF animate)
+│   ├── AssetManager.swift         (Caching sprite, set personaggi e decodifica GIF animate)
 │   └── PetSettings.swift          (Modello persistente UserDefaults + Combine)
+
 └── UI/                            [Presentation & Windowing Layer]
     ├── PetWindow.swift            (NSPanel borderless trasparente livello .floating)
     ├── PetView.swift              (CALayer rendering, animazioni procedurali, gestures)
@@ -182,12 +185,15 @@ Tutte le impostazioni e lo stato dei bisogni sono memorizzati su chiave-valore n
 |  - stellina_needs_last_save_time      : Date                                            |
 +-----------------------------------------------------------------------------------------+
 | Custom Sprites (Percorsi file assoluti o nil)                                           |
+|  - stellina_selected_character         : String (default "bunny")                        |
+|  - stellina_selected_food              : String (default "carrot")                       |
 |  - stellina_custom_idle               : String?                                         |
 |  - stellina_custom_walk_left          : [String]                                        |
 |  - stellina_custom_walk_right         : [String]                                        |
 |  - stellina_custom_fall               : String?                                         |
 |  - stellina_custom_sleep              : String?                                         |
 +-----------------------------------------------------------------------------------------+
+
 ```
 
 ---

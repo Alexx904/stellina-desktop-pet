@@ -4,7 +4,9 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
     private var statusItem: NSStatusItem?
     private var sleepMenuItem: NSMenuItem?
     private var needsMenuItem: NSMenuItem?
+    private var foodMenuItem: NSMenuItem?
     public var onOpenSettingsRequested: (() -> Void)?
+
 
     override public init() {
         super.init()
@@ -22,11 +24,15 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
         let menu = NSMenu()
         menu.delegate = self
 
-        let appTitle = NSMenuItem(title: "🐾 Stellina Desktop Pet v1.0", action: nil, keyEquivalent: "")
+        let appTitle = NSMenuItem(title: "🐾 Stellina Desktop Pet v1.1", action: nil, keyEquivalent: "")
         appTitle.isEnabled = false
         menu.addItem(appTitle)
 
-        let needsItem = NSMenuItem(title: "💖 Coccole: 100% | 🥕 Sazietà: 100%", action: nil, keyEquivalent: "")
+        let authorItem = NSMenuItem(title: "Ideato da Alessandro Miniello ✨", action: nil, keyEquivalent: "")
+        authorItem.isEnabled = false
+        menu.addItem(authorItem)
+
+        let needsItem = NSMenuItem(title: "💖 Coccole: 100% | \(PetSettings.shared.selectedFood.emoji) Sazietà: 100%", action: nil, keyEquivalent: "")
         needsItem.isEnabled = false
         self.needsMenuItem = needsItem
         menu.addItem(needsItem)
@@ -38,11 +44,26 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
         self.sleepMenuItem = sleepItem
         menu.addItem(sleepItem)
 
-        let carrotItem = NSMenuItem(title: "Lancia Carota 🥕", action: #selector(spawnCarrotAction), keyEquivalent: "c")
-        carrotItem.target = self
-        menu.addItem(carrotItem)
+        let curFood = PetSettings.shared.selectedFood
+        let foodItem = NSMenuItem(title: "Lancia \(curFood.displayName) \(curFood.emoji)", action: #selector(spawnCarrotAction), keyEquivalent: "c")
+        foodItem.target = self
+        self.foodMenuItem = foodItem
+        menu.addItem(foodItem)
+
+        // Sottomenu Cibi
+        let foodsMenu = NSMenu()
+        for f in FoodType.allCases {
+            let item = NSMenuItem(title: "\(f.emoji) \(f.displayName)", action: #selector(selectFoodAction(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = f.rawValue
+            foodsMenu.addItem(item)
+        }
+        let chooseFoodItem = NSMenuItem(title: "Scegli Snack...", action: nil, keyEquivalent: "")
+        chooseFoodItem.submenu = foodsMenu
+        menu.addItem(chooseFoodItem)
 
         menu.addItem(NSMenuItem.separator())
+
 
         let settingsItem = NSMenuItem(title: "Impostazioni...", action: #selector(openSettingsAction), keyEquivalent: ",")
         settingsItem.target = self
@@ -63,16 +84,19 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
 
     public func menuNeedsUpdate(_ menu: NSMenu) {
         if BehaviorSystem.shared.currentState == .sleeping {
-            sleepMenuItem?.title = "Sveglia Stellina ☀️"
+            sleepMenuItem?.title = "Sveglia \(PetSettings.shared.selectedCharacter.displayName) ☀️"
         } else {
             sleepMenuItem?.title = "Metti a Dormire 💤"
         }
+
+        let curFood = PetSettings.shared.selectedFood
+        foodMenuItem?.title = "Lancia \(curFood.displayName) \(curFood.emoji)"
 
         if PetSettings.shared.gamificationEnabled {
             needsMenuItem?.isHidden = false
             let aff = Int(PetNeedsManager.shared.affection)
             let full = Int(PetNeedsManager.shared.fullness)
-            needsMenuItem?.title = "💖 Coccole: \(aff)% | 🥕 Sazietà: \(full)%"
+            needsMenuItem?.title = "💖 Coccole: \(aff)% | \(curFood.emoji) Sazietà: \(full)%"
         } else {
             needsMenuItem?.isHidden = true
         }
@@ -85,6 +109,14 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
     @objc private func spawnCarrotAction() {
         CarrotManager.shared.spawnCarrot()
     }
+
+    @objc private func selectFoodAction(_ sender: NSMenuItem) {
+        if let raw = sender.representedObject as? String, let f = FoodType(rawValue: raw) {
+            PetSettings.shared.selectedFood = f
+            CarrotManager.shared.spawnCarrot(foodType: f)
+        }
+    }
+
 
     @objc private func openSettingsAction() {
         onOpenSettingsRequested?()

@@ -41,8 +41,10 @@ public final class BehaviorSystem {
     public var onWakeUpTriggered: (() -> Void)?
     public var onSleepZzzTriggered: (() -> Void)?
     public var onEatTriggered: (() -> Void)?
+    public var onEatTriggeredWithFood: ((FoodType) -> Void)?
 
     private init() {
+
         resetToInitialPosition()
     }
 
@@ -95,7 +97,7 @@ public final class BehaviorSystem {
         onWakeUpTriggered?()
     }
 
-    public func feed() {
+    public func feed(food: FoodType = PetSettings.shared.selectedFood) {
         resetInactivity()
         PetNeedsManager.shared.feed()
         if currentState == .sleeping {
@@ -104,7 +106,9 @@ public final class BehaviorSystem {
         walkTicksRemaining = 40
         SoundManager.shared.play(.eat)
         onEatTriggered?()
+        onEatTriggeredWithFood?(food)
     }
+
 
     public func resetToInitialPosition() {
         let frame = physics.currentScreenFrame

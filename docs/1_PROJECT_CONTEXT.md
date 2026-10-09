@@ -6,7 +6,8 @@
 
 ## 1. Sintesi del Progetto
 
-**Stellina Desktop Pet** è un compagno virtuale leggero, reattivo e divertente per macOS. L'applicazione risiede sullo schermo dell'utente come una creatura viva che reagisce agli input del mouse, cade per gravità, gioca con carote virtuali, dorme se lasciata a riposo e manifesta affetto quando accarezzata.
+**Stellina Desktop Pet** è un compagno virtuale leggero, reattivo e divertente per macOS, ideato da **Alessandro Miniello**. L'applicazione risiede sullo schermo dell'utente come una creatura viva che reagisce agli input del mouse, cade per gravità, gioca con snack virtuali, dorme se lasciata a riposo e manifesta affetto quando accarezzata.
+Oltre al coniglietto Stellina, l'applicazione supporta personaggi standard aggiuntivi (Cagnolino e Gattino) e un ricco catalogo di snack selezionabili.
 
 Il progetto è sviluppato interamente in linguaggio **Swift 5.9+**, mirando a **macOS 12.0 (Monterey)** e versioni successive, sfruttando la combinazione di **AppKit** (per finestre trasparenti non vincolate al Dock e gestione eventi di basso livello), **QuartzCore / CALayer** (per animazioni fluide e a basso consumo) e **SwiftUI / Combine** (per il pannello impostazioni e la gestione reattiva dello stato).
 

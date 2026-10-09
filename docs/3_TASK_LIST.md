@@ -74,3 +74,27 @@
   - Dipende da: `E1-S1-T2`
   - Test: Test unitario o simulazione cambio `visibleFrame`
   - DoD: Stellina e le carote si riposizionano automaticamente all'interno dei limiti sicuri visibili se la risoluzione dello schermo cambia o se un monitor secondario viene connesso/disconnesso.
+
+---
+
+## Epic 4: Espansione Personaggi, Alimenti & Riconoscimento Ideatore (Priorità Alta)
+
+### Story 4.1: Autore, Nuovi Pet & Snack
+- [~] **E4-S1-T1 · Riconoscimento Ideatore Alessandro Miniello**
+  - File: `Sources/Stellina/UI/Settings/SettingsView.swift`, `Sources/Stellina/UI/StatusBarController.swift`, `Sources/Stellina/UI/PetView.swift`, `README.md`, `docs/1_PROJECT_CONTEXT.md`
+  - Dipende da: nessuno
+  - Test: Verifica visiva box ideatore in tab Informazioni, voci menu bar e documentazione
+  - DoD: Alessandro Miniello chiaramente indicato come ideatore in SettingsView, menu bar e README.
+
+- [~] **E4-S1-T2 · Supporto Personaggi Standard Multipli (Cane e Gatto)**
+  - File: `Sources/Stellina/Core/PetCharacter.swift`, `Sources/Stellina/Core/PetSettings.swift`, `Sources/Stellina/Core/AssetManager.swift`, `Sources/Stellina/UI/Settings/SpriteSettingsView.swift`, `Assets Cane/`, `Assets Gatto/`, `scripts/build_app.sh`
+  - Dipende da: nessuno
+  - Test: Switch runtime tra Coniglio, Cane e Gatto; caricamento sprite specifici per idle, fall, sleep e walk
+  - DoD: Directory `Assets Cane/` e `Assets Gatto/` popolate con sprite trasparenti conformi; picker funzionante in Impostazioni.
+
+- [~] **E4-S1-T3 · Catalogo Snack Selezionabili con Particelle a Tema**
+  - File: `Sources/Stellina/Core/FoodType.swift`, `Sources/Stellina/Core/CarrotManager.swift`, `Sources/Stellina/UI/CarrotView.swift`, `Sources/Stellina/UI/PetView.swift`, `Sources/Stellina/UI/Settings/InteractionsSettingsView.swift`, `Sources/Stellina/UI/StatusBarController.swift`
+  - Dipende da: `E4-S1-T2`
+  - Test: Spawn di cibo (Carota, Osso, Pesce, Bistecca, Formaggio, Mela, Biscotto), rendering emoji, emissione particelle dedicate al consumo
+  - DoD: Selezione alimento persistita, menu contestuale aggiornato e VFX differenziati per tipo di cibo.
+

@@ -7,15 +7,17 @@ public final class CarrotManager {
     public final class CarrotItem {
         public let window: CarrotWindow
         public let view: CarrotView
+        public let foodType: FoodType
         public var posX: Double
         public var posY: Double
         public var velocityY: Double
         public var isFalling: Bool
         public var isBeingEaten: Bool
 
-        public init(window: CarrotWindow, view: CarrotView, posX: Double, posY: Double) {
+        public init(window: CarrotWindow, view: CarrotView, foodType: FoodType = .carrot, posX: Double, posY: Double) {
             self.window = window
             self.view = view
+            self.foodType = foodType
             self.posX = posX
             self.posY = posY
             self.velocityY = 0.0
@@ -23,6 +25,7 @@ public final class CarrotManager {
             self.isBeingEaten = false
         }
     }
+
 
     private var activeCarrots: [CarrotItem] = []
     private let physics = PhysicsSystem.shared
@@ -51,7 +54,9 @@ public final class CarrotManager {
 
     private init() {}
 
-    public func spawnCarrot(at customPoint: NSPoint? = nil) {
+    public func spawnCarrot(foodType: FoodType? = nil, at customPoint: NSPoint? = nil) {
+        let food = foodType ?? settings.selectedFood
+
         // Rimuove la carota più vecchia se si supera il limite di 3 carote a schermo
         if activeCarrots.count >= maxCarrots, let oldest = activeCarrots.first {
             removeCarrot(oldest)
@@ -79,11 +84,12 @@ public final class CarrotManager {
 
         let carrotRect = NSRect(x: startX, y: startY, width: size, height: size)
         let window = CarrotWindow(contentRect: carrotRect)
-        let view = CarrotView(frame: NSRect(x: 0, y: 0, width: size, height: size))
+        let view = CarrotView(frame: NSRect(x: 0, y: 0, width: size, height: size), foodType: food)
         view.carrotWindow = window
         window.contentView = view
 
-        let item = CarrotItem(window: window, view: view, posX: startX, posY: startY)
+        let item = CarrotItem(window: window, view: view, foodType: food, posX: startX, posY: startY)
+
 
         view.onDragChanged = { [weak self, weak item] newOrigin in
             guard let self = self, let item = item else { return }
@@ -172,10 +178,11 @@ public final class CarrotManager {
             self.removeCarrot(item)
         }
 
-        BehaviorSystem.shared.feed()
+        BehaviorSystem.shared.feed(food: item.foodType)
         PetNeedsManager.shared.feed()
         onFeedPet?()
     }
+
 
     private func removeCarrot(_ item: CarrotItem) {
         item.window.orderOut(nil)

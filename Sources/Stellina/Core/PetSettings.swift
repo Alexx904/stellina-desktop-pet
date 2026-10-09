@@ -30,7 +30,12 @@ public final class PetSettings: ObservableObject {
 
         // Feature Cute
         static let curiousEarTiltEnabled = "stellina_curious_ear_tilt_enabled"
+
+        // Personaggio & Cibo Standard
+        static let selectedCharacter = "stellina_selected_character"
+        static let selectedFood = "stellina_selected_food"
     }
+
 
     // Parametri Fisici e Visivi
     @Published public var windowSize: Double {
@@ -97,7 +102,24 @@ public final class PetSettings: ObservableObject {
         didSet { UserDefaults.standard.set(curiousEarTiltEnabled, forKey: Keys.curiousEarTiltEnabled) }
     }
 
+    // Personaggio e Cibo Selezionati
+    @Published public var selectedCharacter: PetCharacter {
+        didSet {
+            UserDefaults.standard.set(selectedCharacter.rawValue, forKey: Keys.selectedCharacter)
+            onSpritesChanged?()
+        }
+    }
+
+    @Published public var selectedFood: FoodType {
+        didSet {
+            UserDefaults.standard.set(selectedFood.rawValue, forKey: Keys.selectedFood)
+            onFoodChanged?()
+        }
+    }
+
     public var onGamificationChanged: (() -> Void)?
+    public var onFoodChanged: (() -> Void)?
+
 
     // Percorsi Sprite Personalizzati
     @Published public var customIdlePath: String? {
@@ -177,6 +199,21 @@ public final class PetSettings: ObservableObject {
 
         // Feature Cute
         self.curiousEarTiltEnabled = defaults.object(forKey: Keys.curiousEarTiltEnabled) != nil ? defaults.bool(forKey: Keys.curiousEarTiltEnabled) : true
+
+        // Personaggio & Cibo Standard
+        if let charRaw = defaults.string(forKey: Keys.selectedCharacter),
+           let char = PetCharacter(rawValue: charRaw) {
+            self.selectedCharacter = char
+        } else {
+            self.selectedCharacter = .bunny
+        }
+
+        if let foodRaw = defaults.string(forKey: Keys.selectedFood),
+           let food = FoodType(rawValue: foodRaw) {
+            self.selectedFood = food
+        } else {
+            self.selectedFood = .carrot
+        }
     }
 
     public func resetToDefaults() {
@@ -197,6 +234,8 @@ public final class PetSettings: ObservableObject {
         hungerDecayMinutes = 10.0
 
         curiousEarTiltEnabled = true
+        selectedCharacter = .bunny
+        selectedFood = .carrot
 
         customIdlePath = nil
         customWalkLeftPaths = []
@@ -218,6 +257,8 @@ public final class PetSettings: ObservableObject {
         UserDefaults.standard.removeObject(forKey: Keys.affectionDecayMinutes)
         UserDefaults.standard.removeObject(forKey: Keys.hungerDecayMinutes)
         UserDefaults.standard.removeObject(forKey: Keys.curiousEarTiltEnabled)
+        UserDefaults.standard.removeObject(forKey: Keys.selectedCharacter)
+        UserDefaults.standard.removeObject(forKey: Keys.selectedFood)
         UserDefaults.standard.removeObject(forKey: Keys.customIdlePath)
         UserDefaults.standard.removeObject(forKey: Keys.customWalkLeftPaths)
         UserDefaults.standard.removeObject(forKey: Keys.customWalkRightPaths)
@@ -226,5 +267,7 @@ public final class PetSettings: ObservableObject {
 
         onSpritesChanged?()
         onGamificationChanged?()
+        onFoodChanged?()
     }
 }
+

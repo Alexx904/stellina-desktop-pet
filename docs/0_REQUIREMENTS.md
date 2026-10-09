@@ -104,10 +104,38 @@ L'applicazione è concepita come un accessorio da scrivania (`LSUIElement`) non 
 - **Descrizione:** Finestra delle preferenze articolata in 5 tab:
   1. *Sprite & Aspetto:* selezione file immagine personalizzati dal Finder per ogni stato (`Idle`, `WalkLeft 1-2`, `WalkRight 1-2`, `Fall`, `Sleep`) con anteprima e pulsanti di ripristino default.
   2. *Fisica & Movimento:* slider per dimensione finestra (80-300px), velocità camminata, gravità, velocità fotogrammi (tick), e preset rapidi (Calmo, Standard, Vivace).
-  3. *Interazioni & Audio:* toggle audio generale, slider volume (10-100%), pulsanti di test sonoro, toggle coccole, soglia inattività sonno (1-10 min), pulsante lancia carota.
+  3. *Interazioni & Audio:* toggle audio generale, slider volume (10-100%), pulsanti di test sonoro, toggle coccole, soglia inattività sonno (1-10 min), pulsante lancia carota/cibo.
   4. *Bisogni & Accessori:* toggle gamification, visualizzazione barre di progresso live, toggle badge emoji critici, regolazione tempi di decadimento, pulsante "Ricarica tutto al 100% ✨", toggle Curious Ear Tilt.
   5. *Informazioni:* versione app, credits, pulsante riposiziona e pulsante chiudi app.
 - **Riferimento:** `SettingsView.swift` e relative sotto-viste.
+
+### RF-12: Riconoscimento Ideatore dell'Applicazione
+- **Descrizione:** Citazione esplicita di **Alessandro Miniello** come ideatore e autore di Stellina Desktop Pet.
+- **Comportamento:**
+  - Nel tab "Informazioni" del pannello Impostazioni compare una sezione dedicata ben visibile con nome dell'ideatore ("Ideato da Alessandro Miniello").
+  - Nel menu rapido della barra dei menu (`StatusBarController`) e nel menu contestuale col tasto destro è presente una voce o indicazione informativa sull'ideatore.
+  - Indicazione riportata nella documentazione e nel `README.md`.
+- **Riferimento:** `SettingsView.swift`, `StatusBarController.swift`, `PetView.swift`, `README.md`.
+
+### RF-13: Selezione Personaggi Standard (Coniglio, Cane, Gatto)
+- **Descrizione:** L'utente può scegliere quale personaggio standard visualizzare sul desktop tra Coniglio (Stellina 🐰), Cagnolino (🐶) e Gattino (🐱).
+- **Comportamento:**
+  - Selettore di personaggio accessibile in cima al tab "Sprite & Aspetto" del pannello Impostazioni.
+  - Al cambio personaggio, l'applicazione ricarica a runtime i corrispettivi sprite predefiniti (`Assets Stellina/`, `Assets Cane/`, `Assets Gatto/`).
+  - La personalizzazione slot-per-slot continua a funzionare sovrascrivendo i singoli frame se l'utente carica immagini proprie.
+  - L'impostazione del personaggio viene salvata in `UserDefaults` e ripristinata al riavvio.
+- **Riferimento:** `PetCharacter.swift`, `PetSettings.swift`, `AssetManager.swift`, `SpriteSettingsView.swift`.
+
+### RF-14: Selezione Alimenti & Snack per il Pet
+- **Descrizione:** L'utente può selezionare quale alimento lanciare e far mangiare al pet, con supporto a molteplici cibi tipici oltre alla carota.
+- **Comportamento:**
+  - Ampia scelta di alimenti: Carota 🥕, Osso 🦴, Pesce 🐟, Bistecca 🥩, Formaggio 🧀, Mela 🍎, Biscotto 🍪.
+  - Selettore di cibo integrato nelle Impostazioni (tab "Interazioni & Audio"), nel menu a discesa della barra dei menu (`StatusBarController`) e nel menu tasto destro.
+  - L'elemento a schermo renderizza l'emoji specifica dell'alimento selezionato (`CarrotView`/`FoodView`).
+  - Quando il pet consuma il cibo, l'animazione di masticazione emette particelle colorate a tema con l'alimento scelto.
+  - La preferenza del cibo viene persistita in `UserDefaults`.
+- **Riferimento:** `FoodType.swift`, `CarrotManager.swift`, `CarrotView.swift`, `PetView.swift`, `InteractionsSettingsView.swift`, `StatusBarController.swift`.
+
 
 ---
 

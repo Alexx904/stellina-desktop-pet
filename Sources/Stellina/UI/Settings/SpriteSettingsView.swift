@@ -14,7 +14,7 @@ public struct SpriteSettingsView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Personalizzazione Sprite")
                             .font(.headline)
-                        Text("Sostituisci i frame di movimento. Di default vengono usati i file di 'Assets Stellina'.")
+                        Text("Sostituisci i frame di movimento. Di default vengono usati i file di '\(settings.selectedCharacter.assetDirectoryName)'.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -23,9 +23,25 @@ public struct SpriteSettingsView: View {
                         settings.resetToDefaults()
                     }
                 }
+                .padding(.bottom, 4)
+
+                // Sezione Scelta Personaggio Standard
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Personaggio Standard")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+
+                    Picker("Personaggio:", selection: $settings.selectedCharacter) {
+                        ForEach(PetCharacter.allCases) { char in
+                            Text("\(char.emoji) \(char.displayName)").tag(char)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
                 .padding(.bottom, 8)
 
                 Divider()
+
 
                 // Sezione Idle
                 spriteSlotRow(

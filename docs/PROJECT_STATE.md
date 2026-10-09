@@ -39,7 +39,9 @@ Comandi vietati:         rm -rf fuori repo, git push --force, alterazione file d
 
 | Task | Feature | Come provarla (sintesi) | Consegnata il |
 |---|---|---|---|
-| ONBOARD-01 | Onboarding architetturale & documentale | Revisione di `docs/` e `PROJECT_STATE.md` | 2026-10-09 |
+| E4-S1-T1 | Riconoscimento Ideatore Alessandro Miniello | Apri tab Informazioni in Impostazioni, o apri menu bar / context menu tasto destro | 2026-10-09 |
+| E4-S1-T2 | Personaggi Standard Multipli (Cane e Gatto) | Impostazioni -> Sprite & Aspetto -> Seleziona Cagnolino 🐶 o Gattino 🐱 | 2026-10-09 |
+| E4-S1-T3 | Cibi & Snack Selezionabili Multipli | Impostazioni -> Interazioni, oppure menu contestuale/status bar -> Scegli Snack | 2026-10-09 |
 
 ## Bloccati / Domande aperte per l'utente
 
@@ -47,21 +49,26 @@ Comandi vietati:         rm -rf fuori repo, git push --force, alterazione file d
 
 ## Assunzioni fatte (da confermare)
 
-- L'applicazione rimane 100% nativa macOS (Apple Silicon + Intel) e non è previsto porting multi-piattaforma.
-- La prima priorità tecnica concordata è l'introduzione di una test suite headless per i moduli Core (`PhysicsSystem`, `PetNeedsManager`, `BehaviorSystem`).
+- Ciascun personaggio possiede uno snack naturale preferito di default (Coniglio->Carota, Cane->Osso, Gatto->Pesce), ma l'utente può scegliere liberamente qualsiasi alimento.
+- I set di sprite generati per Cane e Gatto (`Assets Cane/`, `Assets Gatto/`) includono le pose `Idle`, `Fall`, `Sleep`, `left1-2`, `right1-2` con trasparenza alpha nativa.
 
 ## Decisioni recenti (ultime 10, dettagli negli ADR)
 
+- 2026-10-09: Supporto multi-personaggio standard via `PetCharacter` e cartelle asset isolate
+- 2026-10-09: Catalogo cibi esteso via `FoodType` con emoji dinamiche e particelle dedicate
+- 2026-10-09: Box dedicato all'ideatore Alessandro Miniello in UI e metadati di progetto
 - 2026-10-09: ADR-01 · AppKit + CALayer per il pet flottante non invasivo
 - 2026-10-09: ADR-02 · SwiftUI per il pannello preferenze tramite NSHostingController
 - 2026-10-09: ADR-03 · Zero dipendenze di terze parti (solo SDK standard Apple)
 
 ## Prossimi passi
 
-1. Validazione dell'onboarding e della documentazione da parte del Product Owner.
-2. Esecuzione del primo task del backlog: `E1-S1-T1` (Configurazione target di test in `Package.swift`).
+1. Accettazione da parte del Product Owner dei task di Epic 4 (`E4-S1-T1`, `E4-S1-T2`, `E4-S1-T3`).
+2. Sviluppo di Epic 1 (target di test SPM e test di caratterizzazione).
 
 ## Log sessioni (ultime 5, la più recente in alto)
 
+- 2026-10-09 · Implementata Epic 4: Alessandro Miniello come ideatore, personaggi standard Cane e Gatto con sprite nativi, catalogo cibi (Carota, Osso, Pesce, Bistecca, Formaggio, Mela, Biscotto) e particelle VFX a tema · Moduli pronti per accettazione.
 - 2026-10-09 · Eseguito workflow /onboard completo: mappatura stack, reverse engineering architettura, requisiti dedotti, baseline e backlog prioritizzato · Build CI PASS, suite test da creare.
+
 

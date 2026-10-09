@@ -44,10 +44,24 @@ public struct SettingsView: View {
                 Text("Stellina Desktop Pet")
                     .font(.title2)
                     .fontWeight(.bold)
-                Text("Versione 1.0.0 per macOS")
+                Text("Versione 1.1.0 per macOS")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
+
+            // Box Ideatore
+            VStack(spacing: 4) {
+                Text("Ideato con passione da")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text("Alessandro Miniello")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 24)
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color.secondary.opacity(0.12)))
 
             Text("Un compagno virtuale leggero, nativo e battery-friendly per il tuo Mac.")
                 .font(.body)
@@ -57,6 +71,7 @@ public struct SettingsView: View {
 
             Divider()
                 .padding(.horizontal, 40)
+
 
             HStack(spacing: 16) {
                 Button("Riposiziona al Centro") {

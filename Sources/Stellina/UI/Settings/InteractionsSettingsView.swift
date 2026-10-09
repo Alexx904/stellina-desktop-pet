@@ -73,20 +73,28 @@ public struct InteractionsSettingsView: View {
                 }
             }
 
-            Section(header: Text("Carote & Nutrizione 🥕").font(.headline)) {
-                Text("Puoi far apparire una carota cliccando con il tasto destro su Stellina. Le carote hanno la stessa fisica gravitazionale di Stellina: puoi afferrarla e trascinarla fino al coniglietto per fargliela sgranocchiare!")
+            Section(header: Text("Alimentazione & Snack Preferiti 🥕🦴🐟").font(.headline)) {
+                Picker("Snack Attuale:", selection: $settings.selectedFood) {
+                    ForEach(FoodType.allCases) { food in
+                        Text("\(food.emoji) \(food.displayName)").tag(food)
+                    }
+                }
+                .pickerStyle(.menu)
+
+                Text("Puoi lanciare il cibo cliccando con il tasto destro sul pet o dalla barra dei menu. Il cibo cade per gravità: puoi afferrarlo e trascinarlo vicino al pet per farglielo sgranocchiare con particelle a tema!")
                     .font(.caption)
                     .foregroundColor(.secondary)
 
                 HStack {
                     Spacer()
-                    Button("Lancia una Carota Ora 🥕") {
-                        CarrotManager.shared.spawnCarrot()
+                    Button("Lancia \(settings.selectedFood.displayName) \(settings.selectedFood.emoji) Ora") {
+                        CarrotManager.shared.spawnCarrot(foodType: settings.selectedFood)
                     }
                     .buttonStyle(.borderedProminent)
                 }
             }
         }
+
         .padding(20)
     }
 }

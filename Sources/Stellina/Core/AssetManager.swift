@@ -75,31 +75,50 @@ public final class AssetManager {
     }
 
     /// Risolve il percorso URL di un asset cercandolo nel Bundle .app o nella cartella di sviluppo locale
-    public func urlForAsset(named name: String) -> URL? {
-        // Tentativo 1: Sotto-cartella "Assets Stellina" nel Resources del Bundle .app
-        if let url = Bundle.main.url(forResource: name, withExtension: nil, subdirectory: "Assets Stellina") {
+    public func urlForAsset(named name: String, character: PetCharacter? = nil) -> URL? {
+        let activeChar = character ?? settings.selectedCharacter
+        let dirName = activeChar.assetDirectoryName
+
+        // Tentativo 1: Sotto-cartella del personaggio nel Resources del Bundle .app
+        if let url = Bundle.main.url(forResource: name, withExtension: nil, subdirectory: dirName) {
             return url
         }
 
-        // Tentativo 2: Percorso diretto sotto Resources/Assets Stellina
-        if let resURL = Bundle.main.resourceURL?.appendingPathComponent("Assets Stellina").appendingPathComponent(name),
+        // Tentativo 2: Percorso diretto sotto Resources/<dirName>
+        if let resURL = Bundle.main.resourceURL?.appendingPathComponent(dirName).appendingPathComponent(name),
            FileManager.default.fileExists(atPath: resURL.path) {
             return resURL
         }
 
-        // Tentativo 3: Risorsa generica nel Bundle .app
-        if let url = Bundle.main.url(forResource: name, withExtension: nil) {
-            return url
-        }
-
-        // Tentativo 4: Cartella locale radice durante sviluppo / 'make run' / 'swift run'
-        let localPath = "Assets Stellina/\(name)"
+        // Tentativo 3: Cartella locale radice durante sviluppo / 'make run' / 'swift run'
+        let localPath = "\(dirName)/\(name)"
         if FileManager.default.fileExists(atPath: localPath) {
             return URL(fileURLWithPath: localPath)
         }
 
+        // Fallback su "Assets Stellina" se non trovato nella cartella del personaggio corrente
+        if dirName != "Assets Stellina" {
+            if let fallbackURL = Bundle.main.url(forResource: name, withExtension: nil, subdirectory: "Assets Stellina") {
+                return fallbackURL
+            }
+            if let resFallback = Bundle.main.resourceURL?.appendingPathComponent("Assets Stellina").appendingPathComponent(name),
+               FileManager.default.fileExists(atPath: resFallback.path) {
+                return resFallback
+            }
+            let fallbackLocal = "Assets Stellina/\(name)"
+            if FileManager.default.fileExists(atPath: fallbackLocal) {
+                return URL(fileURLWithPath: fallbackLocal)
+            }
+        }
+
+        // Tentativo generico nel Bundle .app
+        if let url = Bundle.main.url(forResource: name, withExtension: nil) {
+            return url
+        }
+
         return nil
     }
+
 
     /// Decodifica e indicizza i fotogrammi CGImage di una GIF animata tramite ImageIO
     public func loadGIF(named name: String) -> (frames: [CGImage], frameDuration: Double, totalDuration: Double)? {
