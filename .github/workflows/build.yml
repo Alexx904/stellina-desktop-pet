@@ -2,7 +2,8 @@ name: Build App (macOS)
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, "feat/**", "chore/**" ]
+
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
