@@ -3,7 +3,7 @@
 > Memoria viva dell'agente. Letta a inizio sessione, aggiornata a fine di ogni turno.
 > Non cancellare sezioni: se vuote, scrivi "nessuno".
 
-**Ultimo aggiornamento:** 2026-10-09  
+**Ultimo aggiornamento:** 2026-10-12  
 **Modalità progetto:** esistente (onboarded il 2026-10-09)  
 **Fase:** Manutenzione & Qualità  
 
@@ -63,12 +63,13 @@ Comandi vietati:         rm -rf fuori repo, git push --force, alterazione file d
 
 ## Prossimi passi
 
-1. Monitorare l'esito della build automatica su GitHub Actions per il branch `feat/multi-pet-food-credits`.
+1. Monitorare l'esito della build automatica su GitHub Actions per il branch principale `main`.
 2. Accettazione da parte del Product Owner dei task di Epic 4 (`E4-S1-T1`, `E4-S1-T2`, `E4-S1-T3`).
 3. Sviluppo di Epic 1 (target di test SPM e test di caratterizzazione).
 
 ## Log sessioni (ultime 5, la più recente in alto)
 
+- 2026-10-12 · Allineato e pushato il branch principale `main` su GitHub (`origin/main`) con fast-forward da `feat/multi-pet-food-credits`, avviando la build CI GitHub Actions sul branch principale.
 - 2026-10-10 · Aggiornato `.github/workflows/build.yml` per supportare il trigger su `feat/**` e pushato il branch `feat/multi-pet-food-credits` su GitHub (`origin`) su richiesta esplicita dell'utente per avviare il build su GitHub Actions.
 - 2026-10-09 · Perfezionati sprite di camminata per Cane e Gatto: generati sprite in profilo laterale con passo e zampe differenziate (left: zampe sinistre avanti, right: zampe destre avanti) · Asset aggiornati e verificati.
 - 2026-10-09 · Implementata Epic 4: Alessandro Miniello come ideatore, personaggi standard Cane e Gatto con sprite nativi, catalogo cibi (Carota, Osso, Pesce, Bistecca, Formaggio, Mela, Biscotto) e particelle VFX a tema · Moduli pronti per accettazione.
